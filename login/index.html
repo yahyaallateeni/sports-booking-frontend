@@ -83,25 +83,6 @@
       messageBox.style.color = isError ? '#991b1b' : '#166534';
     }
 
-    function safeUserPayload(result) {
-      const apiUser = result?.user || {};
-
-      const name =
-        apiUser.fullName ||
-        apiUser.name ||
-        [apiUser.firstName, apiUser.lastName].filter(Boolean).join(' ').trim() ||
-        '';
-
-      return {
-        id: apiUser.id || '',
-        fullName: name || '',
-        email: apiUser.email || '',
-        phone: apiUser.phone || '',
-        accountType: apiUser.accountType || 'CUSTOMER',
-        status: apiUser.status || 'ACTIVE',
-      };
-    }
-
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -118,21 +99,21 @@
           password,
         });
 
-        const user = safeUserPayload(result);
-
         localStorage.setItem('accessToken', result.accessToken || '');
         localStorage.setItem('refreshToken', result.refreshToken || '');
-        localStorage.setItem('currentUser', JSON.stringify(user));
+        localStorage.setItem('currentUser', JSON.stringify(result.user || {}));
 
         showMessage('تم تسجيل الدخول بنجاح.');
 
         setTimeout(() => {
-          if (user.accountType === 'OWNER') {
+          const accountType = result?.user?.accountType;
+
+          if (accountType === 'OWNER') {
             window.location.href = '/owner/';
             return;
           }
 
-          if (user.accountType === 'ADMIN') {
+          if (accountType === 'ADMIN') {
             window.location.href = '/admin/';
             return;
           }
