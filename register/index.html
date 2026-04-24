@@ -121,9 +121,9 @@
         return;
       }
 
+      messageBox.style.display = 'none';
       submitBtn.disabled = true;
       submitBtn.textContent = 'جاري إنشاء الحساب...';
-      messageBox.style.display = 'none';
 
       try {
         const result = await window.API.registerUser({
@@ -138,10 +138,10 @@
         localStorage.setItem('registeredUserId', result.userId || '');
         localStorage.setItem('registeredAccountType', result.accountType || '');
 
-        showMessage('تم إنشاء الحساب بنجاح.');
+        showMessage(result.message || 'تم إنشاء الحساب بنجاح.');
         setTimeout(() => {
           window.location.href = '/login/';
-        }, 1200);
+        }, 900);
       } catch (error) {
         showMessage(error.message || 'فشل إنشاء الحساب.', true);
       } finally {
