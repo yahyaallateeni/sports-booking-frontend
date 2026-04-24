@@ -1,47 +1,29 @@
-const API_BASE_URL = '/api/v1';
+(function () {
+  'use strict';
 
-async function apiRequest(path, options = {}) {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options.headers || {}),
-    },
-    ...options,
-  });
+  function setupMobileMenu() {
+    const toggle = document.querySelector('[data-menu-toggle]');
+    const nav = document.querySelector('.nav-links');
 
-  const data = await response.json().catch(() => ({}));
+    if (!toggle || !nav) return;
 
-  if (!response.ok) {
-    const message =
-      data?.message ||
-      data?.error ||
-      'حدث خطأ أثناء الاتصال بالخادم';
-    throw new Error(Array.isArray(message) ? message.join(', ') : message);
+    toggle.addEventListener('click', function () {
+      nav.classList.toggle('open');
+    });
   }
 
-  return data;
-}
+  function setupAutoYear() {
+    const yearEls = document.querySelectorAll('[data-current-year]');
+    if (!yearEls.length) return;
 
-async function registerUser(payload) {
-  return apiRequest('/auth/register', {
-    method: 'POST',
-    body: JSON.stringify(payload),
+    const year = new Date().getFullYear();
+    yearEls.forEach((el) => {
+      el.textContent = String(year);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    setupMobileMenu();
+    setupAutoYear();
   });
-}
-
-async function loginUser(payload) {
-  return apiRequest('/auth/login', {
-    method: 'POST',
-    body: JSON.stringify(payload),
-  });
-}
-
-async function getCities() {
-  return apiRequest('/locations/cities');
-}
-
-window.API = {
-  registerUser,
-  loginUser,
-  getCities,
-};
+})();
