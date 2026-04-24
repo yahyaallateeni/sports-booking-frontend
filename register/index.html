@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>إنشاء حساب</title>
+  <title>حسابي</title>
   <link rel="stylesheet" href="/assets/styles.css" />
   <script defer src="/assets/app.js"></script>
 </head>
@@ -26,61 +26,55 @@
     </div>
   </header>
 
-  <section class="auth-wrap">
-    <div class="container center">
-      <div class="card auth-card">
-        <h1 class="page-title" style="font-size:30px">إنشاء حساب</h1>
-        <p class="small" style="margin-top:10px">
-          أنشئ حسابك كمستخدم أو مالك ملعب باستخدام البريد أو الجوال.
-        </p>
+  <section class="dashboard-wrap">
+    <div class="container">
+      <h1 class="page-title">حسابي</h1>
+      <p class="page-sub">لوحة العميل للوصول السريع إلى الحجوزات والمفضلة والإشعارات.</p>
 
-        <form id="register-form" class="list" style="margin-top:16px">
-          <div class="field">
-            <label for="firstName">الاسم الأول</label>
-            <input id="firstName" type="text" placeholder="يحيى" required />
-          </div>
+      <div class="grid-4" style="margin-top:20px">
+        <div class="kpi">
+          <div class="v">2</div>
+          <div>حجوزات قادمة</div>
+        </div>
+        <div class="kpi">
+          <div class="v">5</div>
+          <div>مفضلات</div>
+        </div>
+        <div class="kpi">
+          <div class="v">3</div>
+          <div>إشعارات جديدة</div>
+        </div>
+        <div class="kpi">
+          <div class="v">1</div>
+          <div>فاتورة غير مدفوعة</div>
+        </div>
+      </div>
 
-          <div class="field">
-            <label for="lastName">الاسم الأخير</label>
-            <input id="lastName" type="text" placeholder="العطيني" required />
-          </div>
-
-          <div class="field">
-            <label for="email">البريد الإلكتروني</label>
-            <input id="email" type="email" placeholder="name@example.com" />
-          </div>
-
-          <div class="field">
-            <label for="phone">رقم الجوال</label>
-            <input id="phone" type="text" placeholder="05xxxxxxxx" />
-          </div>
-
-          <div class="field">
-            <label for="password">كلمة المرور</label>
-            <input id="password" type="password" placeholder="********" required />
-          </div>
-
-          <div class="field">
-            <label for="accountType">نوع الحساب</label>
-            <select id="accountType" required>
-              <option value="CUSTOMER">مستخدم</option>
-              <option value="OWNER">مالك ملعب</option>
-            </select>
-          </div>
-
-          <div id="register-message" class="notice" style="display:none;"></div>
+      <div class="grid-2" style="margin-top:20px">
+        <div class="card card-body">
+          <h3 style="margin-top:0">بيانات الحساب</h3>
+          <table class="table">
+            <tr><td>الاسم</td><td id="profile-name">—</td></tr>
+            <tr><td>البريد</td><td id="profile-email">—</td></tr>
+            <tr><td>الجوال</td><td id="profile-phone">—</td></tr>
+            <tr><td>نوع الحساب</td><td id="profile-type">—</td></tr>
+            <tr><td>الحالة</td><td id="profile-status">—</td></tr>
+          </table>
 
           <div class="toolbar" style="margin-top:16px">
-            <button id="register-submit" class="btn btn-primary" type="submit">
-              إنشاء الحساب
-            </button>
-            <a class="btn btn-secondary" href="/">العودة للرئيسية</a>
+            <button id="logout-btn" class="btn btn-secondary" type="button">تسجيل الخروج</button>
           </div>
-        </form>
+        </div>
 
-        <p class="small" style="margin-top:12px">
-          بإنشاء الحساب أنت توافق على الشروط وسياسة الاستخدام.
-        </p>
+        <div class="card card-body">
+          <h3 style="margin-top:0">روابط سريعة</h3>
+          <div class="side-menu">
+            <a href="/my-bookings/">حجوزاتي</a>
+            <a href="/favorites/">المفضلة</a>
+            <a href="/notifications/">الإشعارات</a>
+            <a href="/booking/">احجز الآن</a>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -92,62 +86,46 @@
     </div>
   </footer>
 
-  <script src="/assets/api.js"></script>
   <script>
-    const form = document.getElementById('register-form');
-    const messageBox = document.getElementById('register-message');
-    const submitBtn = document.getElementById('register-submit');
-
-    function showMessage(text, isError = false) {
-      messageBox.style.display = 'block';
-      messageBox.textContent = text;
-      messageBox.style.background = isError ? '#fee2e2' : '#dcfce7';
-      messageBox.style.borderColor = isError ? '#fecaca' : '#bbf7d0';
-      messageBox.style.color = isError ? '#991b1b' : '#166534';
+    function mapAccountType(value) {
+      if (value === 'OWNER') return 'مالك ملعب';
+      if (value === 'ADMIN') return 'أدمن';
+      return 'مستخدم';
     }
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+    let user = null;
 
-      const firstName = document.getElementById('firstName').value.trim();
-      const lastName = document.getElementById('lastName').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const phone = document.getElementById('phone').value.trim();
-      const password = document.getElementById('password').value;
-      const accountType = document.getElementById('accountType').value;
+    try {
+      const rawUser = localStorage.getItem('currentUser');
+      user = rawUser ? JSON.parse(rawUser) : null;
+    } catch (error) {
+      user = null;
+    }
 
-      if (!email && !phone) {
-        showMessage('يجب إدخال البريد الإلكتروني أو رقم الجوال على الأقل.', true);
-        return;
-      }
+    if (!user || (!user.id && !user.email && !user.phone)) {
+      window.location.href = '/login/';
+    } else {
+      const displayName =
+        user.fullName ||
+        [user.firstName, user.lastName].filter(Boolean).join(' ').trim() ||
+        user.email ||
+        user.phone ||
+        '—';
 
-      messageBox.style.display = 'none';
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'جاري إنشاء الحساب...';
+      document.getElementById('profile-name').textContent = displayName;
+      document.getElementById('profile-email').textContent = user.email || 'غير مضاف';
+      document.getElementById('profile-phone').textContent = user.phone || 'غير مضاف';
+      document.getElementById('profile-type').textContent = mapAccountType(user.accountType);
+      document.getElementById('profile-status').textContent = user.status || 'ACTIVE';
+    }
 
-      try {
-        const result = await window.API.registerUser({
-          firstName,
-          lastName,
-          email: email || undefined,
-          phone: phone || undefined,
-          password,
-          accountType,
-        });
-
-        localStorage.setItem('registeredUserId', result.userId || '');
-        localStorage.setItem('registeredAccountType', result.accountType || '');
-
-        showMessage(result.message || 'تم إنشاء الحساب بنجاح.');
-        setTimeout(() => {
-          window.location.href = '/login/';
-        }, 900);
-      } catch (error) {
-        showMessage(error.message || 'فشل إنشاء الحساب.', true);
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'إنشاء الحساب';
-      }
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('registeredUserId');
+      localStorage.removeItem('registeredAccountType');
+      window.location.href = '/login/';
     });
   </script>
 </body>
