@@ -102,6 +102,22 @@
       };
     }
 
+    function persistSession(result, user) {
+      const accessToken = result.accessToken || '';
+      const refreshToken = result.refreshToken || '';
+      const userJson = JSON.stringify(user);
+
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('refreshToken', refreshToken);
+      localStorage.setItem('currentUser', userJson);
+      localStorage.setItem('isAuthenticated', 'true');
+
+      sessionStorage.setItem('accessToken', accessToken);
+      sessionStorage.setItem('refreshToken', refreshToken);
+      sessionStorage.setItem('currentUser', userJson);
+      sessionStorage.setItem('isAuthenticated', 'true');
+    }
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -119,10 +135,7 @@
         });
 
         const user = normalizeUser(result);
-
-        localStorage.setItem('accessToken', result.accessToken || '');
-        localStorage.setItem('refreshToken', result.refreshToken || '');
-        localStorage.setItem('currentUser', JSON.stringify(user));
+        persistSession(result, user);
 
         showMessage('تم تسجيل الدخول بنجاح.');
 
