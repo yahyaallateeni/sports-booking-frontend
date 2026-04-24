@@ -31,6 +31,8 @@
       <h1 class="page-title">حسابي</h1>
       <p class="page-sub">لوحة العميل للوصول السريع إلى الحجوزات والمفضلة والإشعارات.</p>
 
+      <div id="profile-alert" class="notice" style="display:none; margin-top:16px;"></div>
+
       <div class="grid-4" style="margin-top:20px">
         <div class="kpi">
           <div class="v">2</div>
@@ -93,18 +95,30 @@
       return 'مستخدم';
     }
 
-    let user = null;
-
-    try {
-      const rawUser = localStorage.getItem('currentUser');
-      user = rawUser ? JSON.parse(rawUser) : null;
-    } catch (error) {
-      user = null;
+    function showAlert(text, isError = false) {
+      const box = document.getElementById('profile-alert');
+      box.style.display = 'block';
+      box.textContent = text;
+      box.style.background = isError ? '#fee2e2' : '#dcfce7';
+      box.style.borderColor = isError ? '#fecaca' : '#bbf7d0';
+      box.style.color = isError ? '#991b1b' : '#166534';
     }
 
-    if (!user || (!user.id && !user.email && !user.phone)) {
-      window.location.href = '/login/';
-    } else {
+    function readUser() {
+      try {
+        const localUser = localStorage.getItem('currentUser');
+        if (localUser) return JSON.parse(localUser);
+
+        const sessionUser = sessionStorage.getItem('currentUser');
+        if (sessionUser) return JSON.parse(sessionUser);
+
+        return null;
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function fillProfile(user) {
       const displayName =
         user.fullName ||
         [user.firstName, user.lastName].filter(Boolean).join(' ').trim() ||
@@ -119,12 +133,28 @@
       document.getElementById('profile-status').textContent = user.status || 'ACTIVE';
     }
 
+    const user = readUser();
+
+    if (!user || (!user.id && !user.email && !user.phone)) {
+      showAlert('لم يتم العثور على جلسة تسجيل دخول صالحة. سيتم تحويلك إلى صفحة الدخول.', true);
+      setTimeout(() => {
+        window.location.href = '/login/';
+      }, 1800);
+    } else {
+      fillProfile(user);
+    }
+
     document.getElementById('logout-btn').addEventListener('click', () => {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('currentUser');
-      localStorage.removeItem('registeredUserId');
-      localStorage.removeItem('registeredAccountType');
+      localStorage.removeItem('isAuthenticated');
+
+      sessionStorage.removeItem('accessToken');
+      sessionStorage.removeItem('refreshToken');
+      sessionStorage.removeItem('currentUser');
+      sessionStorage.removeItem('isAuthenticated');
+
       window.location.href = '/login/';
     });
   </script>
