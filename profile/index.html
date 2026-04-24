@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>تسجيل الدخول</title>
+  <title>حسابي</title>
   <link rel="stylesheet" href="/assets/styles.css" />
   <script defer src="/assets/app.js"></script>
 </head>
@@ -26,38 +26,70 @@
     </div>
   </header>
 
-  <section class="auth-wrap">
-    <div class="container center">
-      <div class="card auth-card">
-        <h1 class="page-title" style="font-size:30px">تسجيل الدخول</h1>
-        <p class="small" style="margin-top:10px">
-          سجّل الدخول بالبريد الإلكتروني أو رقم الجوال.
-        </p>
+  <section class="dashboard-wrap">
+    <div class="container">
+      <h1 class="page-title">حسابي</h1>
+      <p class="page-sub">لوحة العميل للوصول السريع إلى الحجوزات والمفضلة والإشعارات.</p>
 
-        <form id="login-form" class="list" style="margin-top:16px">
-          <div class="field">
-            <label for="emailOrPhone">البريد الإلكتروني أو الجوال</label>
-            <input id="emailOrPhone" type="text" placeholder="name@example.com أو 05xxxxxxxx" required />
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">2</div>
+          <div class="stat-label">حجوزات قادمة</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">5</div>
+          <div class="stat-label">مفضلات</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">3</div>
+          <div class="stat-label">إشعارات جديدة</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">1</div>
+          <div class="stat-label">فاتورة غير مدفوعة</div>
+        </div>
+      </div>
+
+      <div class="dashboard-grid" style="margin-top:24px">
+        <div class="card">
+          <h2 class="section-title">روابط سريعة</h2>
+          <div class="list">
+            <a class="list-item" href="/my-bookings/">حجوزاتي</a>
+            <a class="list-item" href="/favorites/">المفضلة</a>
+            <a class="list-item" href="/notifications/">الإشعارات</a>
+            <a class="list-item" href="/booking/">احجز الآن</a>
           </div>
+        </div>
 
-          <div class="field">
-            <label for="password">كلمة المرور</label>
-            <input id="password" type="password" placeholder="********" required />
+        <div class="card">
+          <h2 class="section-title">بيانات الحساب</h2>
+          <div class="account-table">
+            <div class="row">
+              <div class="label">الاسم</div>
+              <div class="value" id="profile-name">—</div>
+            </div>
+            <div class="row">
+              <div class="label">البريد</div>
+              <div class="value" id="profile-email">—</div>
+            </div>
+            <div class="row">
+              <div class="label">الجوال</div>
+              <div class="value" id="profile-phone">—</div>
+            </div>
+            <div class="row">
+              <div class="label">نوع الحساب</div>
+              <div class="value" id="profile-type">—</div>
+            </div>
+            <div class="row">
+              <div class="label">الحالة</div>
+              <div class="value" id="profile-status">—</div>
+            </div>
           </div>
-
-          <div id="login-message" class="notice" style="display:none;"></div>
 
           <div class="toolbar" style="margin-top:16px">
-            <button id="login-submit" class="btn btn-primary" type="submit">
-              تسجيل الدخول
-            </button>
-            <a class="btn btn-secondary" href="/forgot-password/">نسيت كلمة المرور؟</a>
+            <button id="logout-btn" class="btn btn-secondary" type="button">تسجيل الخروج</button>
           </div>
-        </form>
-
-        <p class="small" style="margin-top:12px">
-          ليس لديك حساب؟ <a href="/register/">أنشئ حسابًا جديدًا</a>
-        </p>
+        </div>
       </div>
     </div>
   </section>
@@ -69,82 +101,46 @@
     </div>
   </footer>
 
-  <script src="/assets/api.js"></script>
   <script>
-    const form = document.getElementById('login-form');
-    const messageBox = document.getElementById('login-message');
-    const submitBtn = document.getElementById('login-submit');
-
-    function showMessage(text, isError = false) {
-      messageBox.style.display = 'block';
-      messageBox.textContent = text;
-      messageBox.style.background = isError ? '#fee2e2' : '#dcfce7';
-      messageBox.style.borderColor = isError ? '#fecaca' : '#bbf7d0';
-      messageBox.style.color = isError ? '#991b1b' : '#166534';
+    function mapAccountType(value) {
+      if (value === 'OWNER') return 'مالك ملعب';
+      if (value === 'ADMIN') return 'أدمن';
+      return 'مستخدم';
     }
 
-    function safeUserPayload(result) {
-      const apiUser = result?.user || {};
+    let user = null;
 
-      const name =
-        apiUser.fullName ||
-        apiUser.name ||
-        [apiUser.firstName, apiUser.lastName].filter(Boolean).join(' ').trim() ||
-        '';
-
-      return {
-        id: apiUser.id || '',
-        fullName: name || '',
-        email: apiUser.email || '',
-        phone: apiUser.phone || '',
-        accountType: apiUser.accountType || 'CUSTOMER',
-        status: apiUser.status || 'ACTIVE',
-      };
+    try {
+      const rawUser = localStorage.getItem('currentUser');
+      user = rawUser ? JSON.parse(rawUser) : null;
+    } catch (error) {
+      user = null;
     }
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+    if (!user || (!user.id && !user.email && !user.phone)) {
+      window.location.href = '/login/';
+    } else {
+      const displayName =
+        user.fullName ||
+        user.name ||
+        user.email ||
+        user.phone ||
+        '—';
 
-      const emailOrPhone = document.getElementById('emailOrPhone').value.trim();
-      const password = document.getElementById('password').value;
+      document.getElementById('profile-name').textContent = displayName;
+      document.getElementById('profile-email').textContent = user.email || 'غير مضاف';
+      document.getElementById('profile-phone').textContent = user.phone || 'غير مضاف';
+      document.getElementById('profile-type').textContent = mapAccountType(user.accountType);
+      document.getElementById('profile-status').textContent = user.status || 'ACTIVE';
+    }
 
-      messageBox.style.display = 'none';
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'جاري تسجيل الدخول...';
-
-      try {
-        const result = await window.API.loginUser({
-          emailOrPhone,
-          password,
-        });
-
-        const user = safeUserPayload(result);
-
-        localStorage.setItem('accessToken', result.accessToken || '');
-        localStorage.setItem('refreshToken', result.refreshToken || '');
-        localStorage.setItem('currentUser', JSON.stringify(user));
-
-        showMessage('تم تسجيل الدخول بنجاح.');
-
-        setTimeout(() => {
-          if (user.accountType === 'OWNER') {
-            window.location.href = '/owner/';
-            return;
-          }
-
-          if (user.accountType === 'ADMIN') {
-            window.location.href = '/admin/';
-            return;
-          }
-
-          window.location.href = '/profile/';
-        }, 900);
-      } catch (error) {
-        showMessage(error.message || 'فشل تسجيل الدخول.', true);
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'تسجيل الدخول';
-      }
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('registeredUserId');
+      localStorage.removeItem('registeredAccountType');
+      window.location.href = '/login/';
     });
   </script>
 </body>
