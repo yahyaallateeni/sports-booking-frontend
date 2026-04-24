@@ -1,3 +1,143 @@
-<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>حسابي</title><link rel="stylesheet" href="/assets/styles.css"><script defer src="/assets/app.js"></script></head><body><header class="topbar"><div class="container nav"><a class="brand" href="/">ملاعب</a><nav class="nav-links"><a class="nav-link" href="/">الرئيسية</a><a class="nav-link" href="/venues/">الملاعب</a><a class="nav-link" href="/booking/">الحجز</a><a class="nav-link" href="/profile/">حسابي</a><a class="nav-link" href="/owner/">لوحة المالك</a><a class="nav-link" href="/admin/">لوحة الأدمن</a></nav><div class="nav-actions"><a class="btn btn-secondary" href="/login/">الدخول</a><a class="btn btn-primary" href="/register/">إنشاء حساب</a></div></div></header>
-<section class="section"><div class="container"><div class="section-head"><div><h1 class="page-title">حسابي</h1><p class="page-sub">لوحة العميل للوصول السريع إلى الحجوزات والمفضلة والإشعارات.</p></div></div><div class="grid-4"><div class="kpi"><div class="v">2</div><div>حجوزات قادمة</div></div><div class="kpi"><div class="v">5</div><div>مفضلات</div></div><div class="kpi"><div class="v">3</div><div>إشعارات جديدة</div></div><div class="kpi"><div class="v">1</div><div>فاتورة غير مدفوعة</div></div></div><div class="grid-2" style="margin-top:20px"><div class="card card-body"><h3 style="margin-top:0">بيانات الحساب</h3><table class="table"><tr><td>الاسم</td><td>أحمد محمد</td></tr><tr><td>البريد</td><td>ahmad@example.com</td></tr><tr><td>نوع الحساب</td><td>مستخدم</td></tr></table></div><div class="card card-body"><h3 style="margin-top:0">روابط سريعة</h3><div class="side-menu"><a href="/my-bookings/">حجوزاتي</a><a href="/favorites/">المفضلة</a><a href="/notifications/">الإشعارات</a><a href="/booking/">احجز الآن</a></div></div></div></div></section>
-<footer class="footer"><div class="container footer-inner"><div>© 2026 ملاعب. منصة حجز ملاعب رياضية.</div><div>واجهة عربية وتجربة حجز واضحة وسريعة.</div></div></footer></body></html>
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>حسابي</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <script defer src="/assets/app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container nav">
+      <a class="brand" href="/">ملاعب</a>
+      <nav class="nav-links">
+        <a class="nav-link" href="/">الرئيسية</a>
+        <a class="nav-link" href="/venues/">الملاعب</a>
+        <a class="nav-link" href="/booking/">الحجز</a>
+        <a class="nav-link" href="/profile/">حسابي</a>
+        <a class="nav-link" href="/owner/">لوحة المالك</a>
+        <a class="nav-link" href="/admin/">لوحة الأدمن</a>
+      </nav>
+      <div class="nav-actions">
+        <a class="btn btn-secondary" href="/login/">الدخول</a>
+        <a class="btn btn-primary" href="/register/">إنشاء حساب</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="dashboard-wrap">
+    <div class="container">
+      <h1 class="page-title">حسابي</h1>
+      <p class="page-sub">لوحة العميل للوصول السريع إلى الحجوزات والمفضلة والإشعارات.</p>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">2</div>
+          <div class="stat-label">حجوزات قادمة</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">5</div>
+          <div class="stat-label">مفضلات</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">3</div>
+          <div class="stat-label">إشعارات جديدة</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">1</div>
+          <div class="stat-label">فاتورة غير مدفوعة</div>
+        </div>
+      </div>
+
+      <div class="dashboard-grid" style="margin-top:24px">
+        <div class="card">
+          <h2 class="section-title">روابط سريعة</h2>
+          <div class="list">
+            <a class="list-item" href="/my-bookings/">حجوزاتي</a>
+            <a class="list-item" href="/favorites/">المفضلة</a>
+            <a class="list-item" href="/notifications/">الإشعارات</a>
+            <a class="list-item" href="/booking/">احجز الآن</a>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 class="section-title">بيانات الحساب</h2>
+          <div class="account-table">
+            <div class="row">
+              <div class="label">الاسم</div>
+              <div class="value" id="profile-name">—</div>
+            </div>
+            <div class="row">
+              <div class="label">البريد</div>
+              <div class="value" id="profile-email">—</div>
+            </div>
+            <div class="row">
+              <div class="label">الجوال</div>
+              <div class="value" id="profile-phone">—</div>
+            </div>
+            <div class="row">
+              <div class="label">نوع الحساب</div>
+              <div class="value" id="profile-type">—</div>
+            </div>
+            <div class="row">
+              <div class="label">الحالة</div>
+              <div class="value" id="profile-status">—</div>
+            </div>
+          </div>
+
+          <div class="toolbar" style="margin-top:16px">
+            <button id="logout-btn" class="btn btn-secondary" type="button">تسجيل الخروج</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div>© 2026 ملاعب. منصة حجز ملاعب رياضية.</div>
+      <div>واجهة عربية وتجربة حجز واضحة وسريعة.</div>
+    </div>
+  </footer>
+
+  <script>
+    function mapAccountType(value) {
+      if (value === 'OWNER') return 'مالك ملعب';
+      if (value === 'ADMIN') return 'أدمن';
+      return 'مستخدم';
+    }
+
+    const rawUser = localStorage.getItem('currentUser');
+    const user = rawUser ? JSON.parse(rawUser) : null;
+
+    if (!user || !user.id) {
+      window.location.href = '/login/';
+    } else {
+      document.getElementById('profile-name').textContent =
+        user.fullName || user.name || user.email || user.phone || '—';
+
+      document.getElementById('profile-email').textContent =
+        user.email || 'غير مضاف';
+
+      document.getElementById('profile-phone').textContent =
+        user.phone || 'غير مضاف';
+
+      document.getElementById('profile-type').textContent =
+        mapAccountType(user.accountType);
+
+      document.getElementById('profile-status').textContent =
+        user.status || '—';
+    }
+
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('registeredUserId');
+      localStorage.removeItem('registeredAccountType');
+      window.location.href = '/login/';
+    });
+  </script>
+</body>
+</html>
