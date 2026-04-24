@@ -1,1 +1,154 @@
-<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>إنشاء حساب</title><link rel="stylesheet" href="/assets/styles.css"><script defer src="/assets/app.js"></script></head><body><header class="topbar"><div class="container nav"><a class="brand" href="/">ملاعب</a><nav class="nav-links"><a class="nav-link" href="/">الرئيسية</a><a class="nav-link" href="/venues/">الملاعب</a><a class="nav-link" href="/booking/">الحجز</a><a class="nav-link" href="/profile/">حسابي</a><a class="nav-link" href="/owner/">لوحة المالك</a><a class="nav-link" href="/admin/">لوحة الأدمن</a></nav><div class="nav-actions"><a class="btn btn-secondary" href="/login/">الدخول</a><a class="btn btn-primary" href="/register/">إنشاء حساب</a></div></div></header><section class="auth-wrap"><div class="container center"><div class="card auth-card"><h1 class="page-title" style="font-size:30px">إنشاء حساب</h1><div class="list"><div class="field"><label>البريد الإلكتروني</label><input placeholder="name@example.com"></div><div class="field"><label>كلمة المرور</label><input type="password" placeholder="••••••••"></div><div class="field"><label>الاسم الكامل</label><input placeholder="أحمد محمد"></div><div class="field"><label>رقم الجوال</label><input placeholder="05xxxxxxxx"></div></div><div class="toolbar" style="margin-top:16px"><a class="btn btn-primary" href="/profile/">متابعة</a><a class="btn btn-secondary" href="/">العودة للرئيسية</a></div><p class="small" style="margin-top:12px">بإنشاء الحساب أنت توافق على الشروط وسياسة الاستخدام.</p></div></div></section><footer class="footer"><div class="container footer-inner"><div>© 2026 ملاعب. منصة حجز ملاعب رياضية.</div><div>واجهة عربية وتجربة حجز واضحة وسريعة.</div></div></footer></body></html>
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>إنشاء حساب</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <script defer src="/assets/app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container nav">
+      <a class="brand" href="/">ملاعب</a>
+      <nav class="nav-links">
+        <a class="nav-link" href="/">الرئيسية</a>
+        <a class="nav-link" href="/venues/">الملاعب</a>
+        <a class="nav-link" href="/booking/">الحجز</a>
+        <a class="nav-link" href="/profile/">حسابي</a>
+        <a class="nav-link" href="/owner/">لوحة المالك</a>
+        <a class="nav-link" href="/admin/">لوحة الأدمن</a>
+      </nav>
+      <div class="nav-actions">
+        <a class="btn btn-secondary" href="/login/">الدخول</a>
+        <a class="btn btn-primary" href="/register/">إنشاء حساب</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="auth-wrap">
+    <div class="container center">
+      <div class="card auth-card">
+        <h1 class="page-title" style="font-size:30px">إنشاء حساب</h1>
+        <p class="small" style="margin-top:10px">
+          أنشئ حسابك كمستخدم أو مالك ملعب باستخدام البريد أو الجوال.
+        </p>
+
+        <form id="register-form" class="list" style="margin-top:16px">
+          <div class="field">
+            <label for="firstName">الاسم الأول</label>
+            <input id="firstName" type="text" placeholder="يحيى" required />
+          </div>
+
+          <div class="field">
+            <label for="lastName">الاسم الأخير</label>
+            <input id="lastName" type="text" placeholder="العطيني" required />
+          </div>
+
+          <div class="field">
+            <label for="email">البريد الإلكتروني</label>
+            <input id="email" type="email" placeholder="name@example.com" />
+          </div>
+
+          <div class="field">
+            <label for="phone">رقم الجوال</label>
+            <input id="phone" type="text" placeholder="05xxxxxxxx" />
+          </div>
+
+          <div class="field">
+            <label for="password">كلمة المرور</label>
+            <input id="password" type="password" placeholder="********" required />
+          </div>
+
+          <div class="field">
+            <label for="accountType">نوع الحساب</label>
+            <select id="accountType" required>
+              <option value="CUSTOMER">مستخدم</option>
+              <option value="OWNER">مالك ملعب</option>
+            </select>
+          </div>
+
+          <div id="register-message" class="notice" style="display:none;"></div>
+
+          <div class="toolbar" style="margin-top:16px">
+            <button id="register-submit" class="btn btn-primary" type="submit">
+              إنشاء الحساب
+            </button>
+            <a class="btn btn-secondary" href="/">العودة للرئيسية</a>
+          </div>
+        </form>
+
+        <p class="small" style="margin-top:12px">
+          بإنشاء الحساب أنت توافق على الشروط وسياسة الاستخدام.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div>© 2026 ملاعب. منصة حجز ملاعب رياضية.</div>
+      <div>واجهة عربية وتجربة حجز واضحة وسريعة.</div>
+    </div>
+  </footer>
+
+  <script src="/assets/api.js"></script>
+  <script>
+    const form = document.getElementById('register-form');
+    const messageBox = document.getElementById('register-message');
+    const submitBtn = document.getElementById('register-submit');
+
+    function showMessage(text, isError = false) {
+      messageBox.style.display = 'block';
+      messageBox.textContent = text;
+      messageBox.style.background = isError ? '#fee2e2' : '#dcfce7';
+      messageBox.style.borderColor = isError ? '#fecaca' : '#bbf7d0';
+      messageBox.style.color = isError ? '#991b1b' : '#166534';
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName = document.getElementById('lastName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const password = document.getElementById('password').value;
+      const accountType = document.getElementById('accountType').value;
+
+      if (!email && !phone) {
+        showMessage('يجب إدخال البريد الإلكتروني أو رقم الجوال على الأقل.', true);
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'جاري إنشاء الحساب...';
+      messageBox.style.display = 'none';
+
+      try {
+        const result = await window.API.registerUser({
+          firstName,
+          lastName,
+          email: email || undefined,
+          phone: phone || undefined,
+          password,
+          accountType,
+        });
+
+        localStorage.setItem('registeredUserId', result.userId || '');
+        localStorage.setItem('registeredAccountType', result.accountType || '');
+
+        showMessage('تم إنشاء الحساب بنجاح.');
+        setTimeout(() => {
+          window.location.href = '/login/';
+        }, 1200);
+      } catch (error) {
+        showMessage(error.message || 'فشل إنشاء الحساب.', true);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'إنشاء الحساب';
+      }
+    });
+  </script>
+</body>
+</html>
