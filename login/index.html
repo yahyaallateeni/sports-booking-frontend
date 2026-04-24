@@ -83,6 +83,25 @@
       messageBox.style.color = isError ? '#991b1b' : '#166534';
     }
 
+    function normalizeUser(result) {
+      const apiUser = result && result.user ? result.user : {};
+      const fullName =
+        apiUser.fullName ||
+        [apiUser.firstName, apiUser.lastName].filter(Boolean).join(' ').trim() ||
+        '';
+
+      return {
+        id: apiUser.id || '',
+        fullName: fullName,
+        firstName: apiUser.firstName || '',
+        lastName: apiUser.lastName || '',
+        email: apiUser.email || '',
+        phone: apiUser.phone || '',
+        accountType: apiUser.accountType || 'CUSTOMER',
+        status: apiUser.status || 'ACTIVE',
+      };
+    }
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -99,21 +118,21 @@
           password,
         });
 
+        const user = normalizeUser(result);
+
         localStorage.setItem('accessToken', result.accessToken || '');
         localStorage.setItem('refreshToken', result.refreshToken || '');
-        localStorage.setItem('currentUser', JSON.stringify(result.user || {}));
+        localStorage.setItem('currentUser', JSON.stringify(user));
 
         showMessage('تم تسجيل الدخول بنجاح.');
 
         setTimeout(() => {
-          const accountType = result?.user?.accountType;
-
-          if (accountType === 'OWNER') {
+          if (user.accountType === 'OWNER') {
             window.location.href = '/owner/';
             return;
           }
 
-          if (accountType === 'ADMIN') {
+          if (user.accountType === 'ADMIN') {
             window.location.href = '/admin/';
             return;
           }
