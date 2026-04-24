@@ -83,15 +83,34 @@
       messageBox.style.color = isError ? '#991b1b' : '#166534';
     }
 
+    function safeUserPayload(result) {
+      const apiUser = result?.user || {};
+
+      const name =
+        apiUser.fullName ||
+        apiUser.name ||
+        [apiUser.firstName, apiUser.lastName].filter(Boolean).join(' ').trim() ||
+        '';
+
+      return {
+        id: apiUser.id || '',
+        fullName: name || '',
+        email: apiUser.email || '',
+        phone: apiUser.phone || '',
+        accountType: apiUser.accountType || 'CUSTOMER',
+        status: apiUser.status || 'ACTIVE',
+      };
+    }
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const emailOrPhone = document.getElementById('emailOrPhone').value.trim();
       const password = document.getElementById('password').value;
 
+      messageBox.style.display = 'none';
       submitBtn.disabled = true;
       submitBtn.textContent = 'جاري تسجيل الدخول...';
-      messageBox.style.display = 'none';
 
       try {
         const result = await window.API.loginUser({
@@ -99,27 +118,27 @@
           password,
         });
 
+        const user = safeUserPayload(result);
+
         localStorage.setItem('accessToken', result.accessToken || '');
         localStorage.setItem('refreshToken', result.refreshToken || '');
-        localStorage.setItem('currentUser', JSON.stringify(result.user || {}));
+        localStorage.setItem('currentUser', JSON.stringify(user));
 
         showMessage('تم تسجيل الدخول بنجاح.');
 
         setTimeout(() => {
-          const accountType = result?.user?.accountType;
-
-          if (accountType === 'OWNER') {
+          if (user.accountType === 'OWNER') {
             window.location.href = '/owner/';
             return;
           }
 
-          if (accountType === 'ADMIN') {
+          if (user.accountType === 'ADMIN') {
             window.location.href = '/admin/';
             return;
           }
 
           window.location.href = '/profile/';
-        }, 1000);
+        }, 900);
       } catch (error) {
         showMessage(error.message || 'فشل تسجيل الدخول.', true);
       } finally {
