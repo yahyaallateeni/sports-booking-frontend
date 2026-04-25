@@ -102,7 +102,7 @@
           <a class="nav-link" href="/admin/">لوحة الأدمن</a>
         </nav>
         <div class="nav-actions">
-          <a class="btn btn-secondary" href="/owner/">لوحة المالك</a>
+          <a class="btn btn-secondary" href="/owner/">العودة للوحة المالك</a>
           <a class="btn btn-primary" href="/owner/venues-management/">إدارة الملاعب</a>
         </div>
       </div>
@@ -111,7 +111,7 @@
     <section class="dashboard-wrap">
       <div class="container">
         <h1 class="page-title">إدارة الملاعب</h1>
-        <p class="page-sub">أضف ملعبك وابدأ بناء صفحة منشأتك الرياضية داخل المنصة.</p>
+        <p class="page-sub">أضف ملعبك وابدأ إدارة منشأتك الرياضية داخل المنصة.</p>
 
         <div id="owner-alert" class="notice" style="display:none; margin-top:16px;"></div>
 
@@ -144,7 +144,7 @@
               </div>
             </div>
             <p class="small" style="margin-top:16px">
-              هذه الصفحة الآن مربوطة بإنشاء ملعب فعليًا في قاعدة البيانات، وسنربط عرض قائمة الملاعب المملوكة لك في الخطوة التالية.
+              هذه الصفحة مربوطة بإنشاء ملعب فعليًا في قاعدة البيانات، وسنضيف لاحقًا عرض قائمة الملاعب المملوكة لك.
             </p>
           </div>
         </div>
@@ -310,6 +310,7 @@
           data?.message ||
           data?.error ||
           'حدث خطأ أثناء الاتصال بالخادم';
+
         throw new Error(Array.isArray(message) ? message.join(', ') : message);
       }
 
