@@ -691,9 +691,37 @@
       `;
     }
 
+    async function getOrCreateOwnerProfile(user) {
+      let ownerProfile = await httpJson(`/owners/${user.id}/profile`, { method: 'GET' }).catch(() => null);
+
+      if (ownerProfile && ownerProfile.id) {
+        return ownerProfile;
+      }
+
+      const payload = {
+        displayName:
+          user.fullName ||
+          [user.firstName, user.lastName].filter(Boolean).join(' ').trim() ||
+          'مالك ملعب',
+        contactPhone: user.phone || '',
+        contactEmail: user.email || '',
+        businessName:
+          user.fullName ||
+          [user.firstName, user.lastName].filter(Boolean).join(' ').trim() ||
+          'مالك ملعب',
+      };
+
+      ownerProfile = await httpJson(`/owners/${user.id}/profile`, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+
+      return ownerProfile;
+    }
+
     async function loadOwnerVenues(user) {
       try {
-        const ownerProfile = await httpJson(`/owners/${user.id}/profile`, { method: 'GET' }).catch(() => null);
+        const ownerProfile = await getOrCreateOwnerProfile(user);
 
         if (!ownerProfile || !ownerProfile.id) {
           renderVenues([]);
@@ -953,10 +981,10 @@
         submitBtn.textContent = 'جارِ إضافة الملعب...';
 
         try {
-          const ownerProfile = await httpJson(`/owners/${user.id}/profile`, { method: 'GET' });
+          const ownerProfile = await getOrCreateOwnerProfile(user);
 
           if (!ownerProfile || !ownerProfile.id) {
-            throw new Error('لم يتم العثور على ملف المالك.');
+            throw new Error('تعذر إنشاء ملف المالك.');
           }
 
           const payload = await buildVenuePayload(user, ownerProfile.id);
