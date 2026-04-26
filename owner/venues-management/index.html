@@ -144,6 +144,7 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
+      position: relative;
     }
 
     .field label {
@@ -154,7 +155,8 @@
 
     .field input,
     .field select,
-    .field textarea {
+    .field textarea,
+    .city-picker-trigger {
       width: 100%;
       min-height: 48px;
       border: 1px solid #cbd5e1;
@@ -165,6 +167,11 @@
       color: #0f172a;
       outline: none;
       box-sizing: border-box;
+    }
+
+    .city-picker-trigger {
+      text-align: right;
+      cursor: pointer;
     }
 
     .field textarea {
@@ -213,6 +220,64 @@
       font-size: 13px;
       line-height: 1.7;
       margin-top: 4px;
+    }
+
+    .city-picker-panel {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      left: 0;
+      z-index: 30;
+      background: #fff;
+      border: 1px solid #cbd5e1;
+      border-radius: 16px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+      overflow: hidden;
+    }
+
+    .city-picker-panel.open {
+      display: block;
+    }
+
+    .city-picker-search-wrap {
+      padding: 10px;
+      border-bottom: 1px solid #e2e8f0;
+      background: #f8fafc;
+    }
+
+    .city-picker-search {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font: inherit;
+      box-sizing: border-box;
+      outline: none;
+    }
+
+    .city-picker-list {
+      max-height: 260px;
+      overflow-y: auto;
+      padding: 6px;
+    }
+
+    .city-picker-item {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      text-align: right;
+      padding: 11px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      font: inherit;
+      color: #0f172a;
+    }
+
+    .city-picker-item:hover,
+    .city-picker-item.active {
+      background: #eff6ff;
     }
 
     @media (max-width: 960px) {
@@ -275,7 +340,7 @@
           </div>
 
           <p class="small-note">
-            هذه الصفحة مربوطة ببياناتك الحقيقية. يمكنك البحث داخل المدن والأحياء بسرعة، وإذا لم تجد الموقع المناسب فستجد خيار "أخرى" في أسفل كل قائمة.
+            يمكنك الآن اختيار المدينة من قائمة قابلة للبحث من داخلها نفسها، مع خيار "أخرى" في آخر القائمة.
           </p>
         </section>
 
@@ -332,26 +397,21 @@
             </div>
 
             <div class="field">
-              <label for="city-search">البحث عن مدينة</label>
-              <input id="city-search" type="text" placeholder="ابحث باسم المدينة..." />
-            </div>
-
-            <div class="field">
-              <label for="venue-city">المدينة</label>
-              <select id="venue-city" required>
-                <option value="">اختر المدينة</option>
-              </select>
-              <div class="hint-text">اكتب في مربع البحث بالأعلى لتصفية المدن بسرعة.</div>
+              <label>المدينة</label>
+              <button id="city-picker-trigger" class="city-picker-trigger" type="button">اختر المدينة</button>
+              <div id="city-picker-panel" class="city-picker-panel">
+                <div class="city-picker-search-wrap">
+                  <input id="city-picker-search" class="city-picker-search" type="text" placeholder="ابحث باسم المدينة..." />
+                </div>
+                <div id="city-picker-list" class="city-picker-list"></div>
+              </div>
+              <input id="venue-city" type="hidden" required />
+              <div class="hint-text">ابحث من داخل القائمة نفسها، وستجد "أخرى" في آخرها.</div>
             </div>
 
             <div id="custom-city-wrap" class="field field-hidden">
               <label for="custom-city-name">اسم المدينة / القرية / المركز</label>
               <input id="custom-city-name" type="text" placeholder="اكتب الاسم كما تريده" />
-            </div>
-
-            <div class="field">
-              <label for="area-search">البحث عن حي</label>
-              <input id="area-search" type="text" placeholder="ابحث باسم الحي..." />
             </div>
 
             <div class="field">
@@ -417,6 +477,7 @@
     const OTHER_VALUE = '__OTHER__';
 
     let allCities = [];
+    let filteredCities = [];
     let allAreas = [];
 
     function showMessage(text, type = 'success') {
@@ -659,39 +720,54 @@
       }
     }
 
-    function renderCityOptions() {
-      const citySelect = document.getElementById('venue-city');
-      const searchTerm = document.getElementById('city-search').value.trim().toLowerCase();
+    function closeCityPicker() {
+      document.getElementById('city-picker-panel').classList.remove('open');
+    }
 
-      citySelect.innerHTML = '';
+    function openCityPicker() {
+      document.getElementById('city-picker-panel').classList.add('open');
+      document.getElementById('city-picker-search').focus();
+    }
 
-      const firstOption = document.createElement('option');
-      firstOption.value = '';
-      firstOption.textContent = 'اختر المدينة';
-      citySelect.appendChild(firstOption);
+    function setCitySelection(value, label) {
+      document.getElementById('venue-city').value = value;
+      document.getElementById('city-picker-trigger').textContent = label || 'اختر المدينة';
+      closeCityPicker();
+    }
 
-      const filteredCities = allCities.filter((city) => {
+    function renderCityPickerList() {
+      const listEl = document.getElementById('city-picker-list');
+      const keyword = document.getElementById('city-picker-search').value.trim().toLowerCase();
+
+      filteredCities = allCities.filter((city) => {
         const text = getArabicName(city).toLowerCase();
-        return !searchTerm || text.includes(searchTerm);
+        return !keyword || text.includes(keyword);
       });
 
-      filteredCities.forEach((city) => {
-        const option = document.createElement('option');
-        option.value = city.id;
-        option.textContent = getArabicName(city);
-        citySelect.appendChild(option);
-      });
+      const itemsHtml = filteredCities.map((city) => {
+        const label = escapeHtml(getArabicName(city));
+        return `<button class="city-picker-item" type="button" data-city-id="${escapeHtml(city.id)}" data-city-label="${label}">${label}</button>`;
+      }).join('');
 
-      const otherOption = document.createElement('option');
-      otherOption.value = OTHER_VALUE;
-      otherOption.textContent = 'أخرى';
-      citySelect.appendChild(otherOption);
+      listEl.innerHTML =
+        itemsHtml +
+        `<button class="city-picker-item" type="button" data-city-id="${OTHER_VALUE}" data-city-label="أخرى">أخرى</button>` +
+        (!itemsHtml && keyword ? `<div class="empty-state" style="margin-top:8px;">لا توجد نتائج مطابقة</div>` : '');
+    }
+
+    async function loadCities() {
+      try {
+        const citiesPayload = await httpJson('/locations/cities', { method: 'GET' });
+        allCities = normalizeCollection(citiesPayload);
+        renderCityPickerList();
+      } catch (error) {
+        allCities = [];
+        renderCityPickerList();
+      }
     }
 
     function renderAreaOptions() {
       const areaSelect = document.getElementById('venue-area');
-      const searchTerm = document.getElementById('area-search').value.trim().toLowerCase();
-
       areaSelect.innerHTML = '';
 
       const firstOption = document.createElement('option');
@@ -699,12 +775,7 @@
       firstOption.textContent = allAreas.length ? 'اختر الحي / المنطقة' : 'لا توجد أحياء متاحة';
       areaSelect.appendChild(firstOption);
 
-      const filteredAreas = allAreas.filter((area) => {
-        const text = getArabicName(area).toLowerCase();
-        return !searchTerm || text.includes(searchTerm);
-      });
-
-      filteredAreas.forEach((area) => {
+      allAreas.forEach((area) => {
         const option = document.createElement('option');
         option.value = area.id;
         option.textContent = getArabicName(area);
@@ -719,31 +790,10 @@
       areaSelect.disabled = false;
     }
 
-    async function loadCities() {
-      const citySelect = document.getElementById('venue-city');
-      citySelect.innerHTML = '<option value="">جارِ تحميل المدن...</option>';
-
-      try {
-        const citiesPayload = await httpJson('/locations/cities', { method: 'GET' });
-        allCities = normalizeCollection(citiesPayload);
-
-        if (!allCities.length) {
-          citySelect.innerHTML = '<option value="">لا توجد مدن متاحة</option>';
-          return;
-        }
-
-        renderCityOptions();
-      } catch (error) {
-        citySelect.innerHTML = '<option value="">تعذر تحميل المدن</option>';
-      }
-    }
-
     async function loadAreasByCity(cityId) {
       const areaSelect = document.getElementById('venue-area');
-      const areaSearch = document.getElementById('area-search');
 
       allAreas = [];
-      areaSearch.value = '';
       toggleCustomAreaField();
 
       if (!cityId) {
@@ -835,13 +885,14 @@
 
           showMessage('تم إرسال الملعب بنجاح. قد يظهر ضمن الحالة قيد المراجعة.');
           form.reset();
+          document.getElementById('venue-city').value = '';
+          document.getElementById('city-picker-trigger').textContent = 'اختر المدينة';
+          document.getElementById('city-picker-search').value = '';
           document.getElementById('venue-area').innerHTML = '<option value="">اختر المدينة أولاً</option>';
           document.getElementById('venue-area').disabled = true;
-          document.getElementById('city-search').value = '';
-          document.getElementById('area-search').value = '';
           toggleCustomCityField();
           toggleCustomAreaField();
-          renderCityOptions();
+          renderCityPickerList();
 
           await loadOwnerVenues(user);
         } catch (error) {
@@ -854,14 +905,51 @@
 
       resetBtn.addEventListener('click', () => {
         form.reset();
+        document.getElementById('venue-city').value = '';
+        document.getElementById('city-picker-trigger').textContent = 'اختر المدينة';
+        document.getElementById('city-picker-search').value = '';
         document.getElementById('venue-area').innerHTML = '<option value="">اختر المدينة أولاً</option>';
         document.getElementById('venue-area').disabled = true;
-        document.getElementById('city-search').value = '';
-        document.getElementById('area-search').value = '';
         toggleCustomCityField();
         toggleCustomAreaField();
-        renderCityOptions();
+        renderCityPickerList();
         clearMessage();
+      });
+    }
+
+    function bindCityPickerEvents() {
+      const trigger = document.getElementById('city-picker-trigger');
+      const search = document.getElementById('city-picker-search');
+      const list = document.getElementById('city-picker-list');
+      const panel = document.getElementById('city-picker-panel');
+
+      trigger.addEventListener('click', function () {
+        if (panel.classList.contains('open')) {
+          closeCityPicker();
+        } else {
+          openCityPicker();
+        }
+      });
+
+      search.addEventListener('input', function () {
+        renderCityPickerList();
+      });
+
+      list.addEventListener('click', async function (e) {
+        const btn = e.target.closest('[data-city-id]');
+        if (!btn) return;
+
+        const cityId = btn.getAttribute('data-city-id');
+        const cityLabel = btn.getAttribute('data-city-label');
+
+        setCitySelection(cityId, cityLabel);
+        await loadAreasByCity(cityId);
+      });
+
+      document.addEventListener('click', function (e) {
+        if (!panel.contains(e.target) && !trigger.contains(e.target)) {
+          closeCityPicker();
+        }
       });
     }
 
@@ -872,23 +960,11 @@
       fillOwnerInfo(user);
 
       document.getElementById('logout-btn').addEventListener('click', logout);
-
-      document.getElementById('city-search').addEventListener('input', () => {
-        renderCityOptions();
-      });
-
-      document.getElementById('area-search').addEventListener('input', () => {
-        renderAreaOptions();
-      });
-
-      document.getElementById('venue-city').addEventListener('change', async function () {
-        await loadAreasByCity(this.value);
-      });
-
       document.getElementById('venue-area').addEventListener('change', function () {
         toggleCustomAreaField();
       });
 
+      bindCityPickerEvents();
       await loadCities();
       await loadOwnerVenues(user);
       await handleCreateVenue(user);
