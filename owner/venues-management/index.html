@@ -340,7 +340,7 @@
           </div>
 
           <p class="small-note">
-            يمكنك الآن اختيار المدينة من قائمة قابلة للبحث من داخلها نفسها، مع خيار "أخرى" في آخر القائمة.
+            يمكنك الآن اختيار المدينة من قائمة قابلة للبحث من داخلها نفسها، مع خيار "أخرى" في آخر القائمة، وكذلك الحي.
           </p>
         </section>
 
@@ -599,6 +599,17 @@
       return [];
     }
 
+    function extractCustomMeta(text) {
+      const source = String(text || '');
+      const cityMatch = source.match(/\[CUSTOM_CITY\]:(.*?)(\n|$)/);
+      const areaMatch = source.match(/\[CUSTOM_AREA\]:(.*?)(\n|$)/);
+
+      return {
+        customCity: cityMatch ? cityMatch[1].trim() : '',
+        customArea: areaMatch ? areaMatch[1].trim() : '',
+      };
+    }
+
     function renderVenues(venues) {
       const wrap = document.getElementById('venues-list-wrap');
       const totalEl = document.getElementById('venues-count');
@@ -641,17 +652,27 @@
                 const statusClass =
                   status === 'APPROVED' ? 'pill pill-success' : 'pill pill-warn';
 
-                const cityName =
+                const meta = extractCustomMeta(venue.description || '');
+
+                let cityName =
                   venue.city?.nameAr ||
                   venue.cityNameAr ||
                   venue.cityName ||
                   '—';
 
-                const areaName =
+                let areaName =
                   venue.area?.nameAr ||
                   venue.areaNameAr ||
                   venue.areaName ||
                   '—';
+
+                if (cityName === 'أخرى' && meta.customCity) {
+                  cityName = meta.customCity;
+                }
+
+                if (areaName === 'أخرى' && meta.customArea) {
+                  areaName = meta.customArea;
+                }
 
                 return `
                   <tr>
@@ -824,20 +845,82 @@
       }
     }
 
-    function buildVenuePayload(user, ownerProfileId) {
-      const cityId = document.getElementById('venue-city').value;
-      const areaId = document.getElementById('venue-area').value;
+    async function resolveOtherIds(selectedCityId) {
+      const citiesPayload = await httpJson('/locations/cities', { method: 'GET' });
+      const cities = normalizeCollection(citiesPayload);
+      const otherCity = cities.find((city) => city.slug === 'other' || city.nameAr === 'أخرى');
 
-      if (cityId === OTHER_VALUE || areaId === OTHER_VALUE) {
-        throw new Error('خيار "أخرى" تمت إضافته في الواجهة، وتفعيل حفظه في قاعدة البيانات سيكون في الخطوة التالية.');
+      if (!otherCity) {
+        throw new Error('تعذر العثور على مدينة "أخرى" في قاعدة البيانات.');
+      }
+
+      if (selectedCityId === OTHER_VALUE) {
+        const otherCityAreasPayload = await httpJson(`/locations/cities/${otherCity.id}/areas`, { method: 'GET' });
+        const otherCityAreas = normalizeCollection(otherCityAreasPayload);
+        const otherArea = otherCityAreas.find((area) => area.slug === 'other' || area.nameAr === 'أخرى');
+
+        if (!otherArea) {
+          throw new Error('تعذر العثور على حي "أخرى" لمدينة "أخرى".');
+        }
+
+        return {
+          cityId: otherCity.id,
+          areaId: otherArea.id,
+        };
+      }
+
+      const selectedCityAreasPayload = await httpJson(`/locations/cities/${selectedCityId}/areas`, { method: 'GET' });
+      const selectedCityAreas = normalizeCollection(selectedCityAreasPayload);
+      const otherAreaForSelectedCity = selectedCityAreas.find((area) => area.slug === 'other' || area.nameAr === 'أخرى');
+
+      if (!otherAreaForSelectedCity) {
+        throw new Error('تعذر العثور على حي "أخرى" لهذه المدينة.');
+      }
+
+      return {
+        cityId: selectedCityId,
+        areaId: otherAreaForSelectedCity.id,
+      };
+    }
+
+    async function buildVenuePayload(user, ownerProfileId) {
+      const selectedCityId = document.getElementById('venue-city').value;
+      const selectedAreaId = document.getElementById('venue-area').value;
+
+      const customCityName = document.getElementById('custom-city-name').value.trim();
+      const customAreaName = document.getElementById('custom-area-name').value.trim();
+
+      let cityId = selectedCityId;
+      let areaId = selectedAreaId;
+
+      if (selectedCityId === OTHER_VALUE || selectedAreaId === OTHER_VALUE) {
+        const resolved = await resolveOtherIds(selectedCityId);
+        cityId = resolved.cityId;
+        areaId = selectedAreaId === OTHER_VALUE ? resolved.areaId : selectedAreaId;
       }
 
       const nameAr = document.getElementById('venue-name').value.trim();
       const sportType = document.getElementById('venue-sport').value;
       const capacity = Number(document.getElementById('venue-capacity').value);
       const pricePerHour = Number(document.getElementById('venue-price').value);
-      const description = document.getElementById('venue-description').value.trim();
+      const baseDescription = document.getElementById('venue-description').value.trim();
       const imageUrl = document.getElementById('venue-image').value.trim();
+
+      const customLines = [];
+      if (selectedCityId === OTHER_VALUE && customCityName) {
+        customLines.push(`[CUSTOM_CITY]: ${customCityName}`);
+      }
+      if (selectedAreaId === OTHER_VALUE && customAreaName) {
+        customLines.push(`[CUSTOM_AREA]: ${customAreaName}`);
+      }
+
+      const description = customLines.length
+        ? `${customLines.join('\n')}\n${baseDescription}`.trim()
+        : baseDescription;
+
+      const addressLine = customLines.length
+        ? `${customLines.join(' | ')} | ${baseDescription || nameAr}`.trim()
+        : (baseDescription || nameAr);
 
       return {
         ownerProfileId,
@@ -849,7 +932,7 @@
         pricePerHour,
         description,
         imageUrl,
-        addressLine: description || nameAr,
+        addressLine,
         slug: `${nameAr}-${Date.now()}`
           .toLowerCase()
           .replace(/\s+/g, '-')
@@ -876,7 +959,7 @@
             throw new Error('لم يتم العثور على ملف المالك.');
           }
 
-          const payload = buildVenuePayload(user, ownerProfile.id);
+          const payload = await buildVenuePayload(user, ownerProfile.id);
 
           await httpJson('/venues', {
             method: 'POST',
