@@ -7,412 +7,567 @@
   <link rel="stylesheet" href="/assets/styles.css" />
   <script defer src="/assets/app.js"></script>
   <style>
-    body.owner-guard-loading .owner-page-shell {
-      display: none;
+    .owner-page {
+      padding: 32px 0 48px;
     }
 
-    .owner-loading-screen {
-      display: none;
+    .page-head {
+      margin-bottom: 24px;
     }
 
-    body.owner-guard-loading .owner-loading-screen {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #f6f8fb;
+    .page-head h1 {
+      margin: 0 0 8px;
+      font-size: 42px;
       color: #0f172a;
-      font-size: 18px;
+    }
+
+    .page-head p {
+      margin: 0;
+      color: #475569;
+    }
+
+    .page-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .two-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .stat-card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .stat-card .num {
+      font-size: 56px;
+      line-height: 1;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 10px;
+    }
+
+    .stat-card .label {
+      color: #334155;
+      font-weight: 600;
+    }
+
+    .card-box {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 22px;
+      padding: 22px;
+    }
+
+    .card-box h2,
+    .card-box h3 {
+      margin-top: 0;
+      color: #0f172a;
+    }
+
+    .small-note {
+      color: #64748b;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .owner-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .owner-table th,
+    .owner-table td {
+      padding: 14px 10px;
+      border-bottom: 1px solid #e2e8f0;
+      text-align: right;
+      vertical-align: middle;
+    }
+
+    .owner-table th {
+      color: #0f172a;
+      font-size: 15px;
       font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .owner-table td {
+      color: #334155;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      margin-top: 16px;
+    }
+
+    .notice-box {
+      display: none;
+      padding: 14px 16px;
+      border-radius: 14px;
+      margin-bottom: 18px;
+      font-size: 14px;
+      line-height: 1.7;
+      border: 1px solid transparent;
+    }
+
+    .notice-success {
+      background: #dcfce7;
+      color: #166534;
+      border-color: #bbf7d0;
+    }
+
+    .notice-error {
+      background: #fee2e2;
+      color: #991b1b;
+      border-color: #fecaca;
     }
 
     .form-grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
     }
 
-    .form-grid .field.full {
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field label {
+      font-size: 14px;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font: inherit;
+      background: #fff;
+      color: #0f172a;
+      outline: none;
+      box-sizing: border-box;
+    }
+
+    .field textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .field-full {
       grid-column: 1 / -1;
     }
 
-    .venues-list {
-      display: grid;
-      gap: 16px;
-    }
-
-    .venue-card {
-      border: 1px solid #e5e7eb;
-      border-radius: 16px;
-      padding: 16px;
-      background: #fff;
-    }
-
-    .venue-card h4 {
-      margin: 0 0 10px;
-      font-size: 18px;
-    }
-
-    .venue-meta {
-      display: grid;
-      gap: 8px;
-      color: #475569;
-      font-size: 14px;
-    }
-
-    .badge-inline {
+    .pill {
       display: inline-block;
-      padding: 4px 10px;
+      padding: 6px 12px;
       border-radius: 999px;
-      background: #eef2ff;
-      color: #3730a3;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 700;
+      white-space: nowrap;
     }
 
-    @media (max-width: 768px) {
-      .form-grid {
+    .pill-success {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .pill-warn {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .empty-state {
+      padding: 18px;
+      text-align: center;
+      color: #64748b;
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: 16px;
+    }
+
+    @media (max-width: 960px) {
+      .page-grid,
+      .form-grid,
+      .two-stats {
         grid-template-columns: 1fr;
+      }
+
+      .page-head h1 {
+        font-size: 34px;
       }
     }
   </style>
-
-  <script>
-    (function () {
-      document.documentElement.classList.add('owner-guard-loading');
-      document.addEventListener('DOMContentLoaded', function () {
-        document.body.classList.add('owner-guard-loading');
-      });
-    })();
-  </script>
 </head>
 <body>
-  <div class="owner-loading-screen">جارٍ التحقق من صلاحية المالك...</div>
+  <header class="topbar">
+    <div class="container nav">
+      <a class="brand" href="/">ملاعب</a>
 
-  <div class="owner-page-shell">
-    <header class="topbar">
-      <div class="container nav">
-        <a class="brand" href="/">ملاعب</a>
-        <nav class="nav-links">
-          <a class="nav-link" href="/">الرئيسية</a>
-          <a class="nav-link" href="/venues/">الملاعب</a>
-          <a class="nav-link" href="/booking/">الحجز</a>
-          <a class="nav-link" href="/profile/">حسابي</a>
-          <a class="nav-link" href="/owner/">لوحة المالك</a>
-          <a class="nav-link" href="/admin/">لوحة الأدمن</a>
-        </nav>
-        <div class="nav-actions">
-          <a class="btn btn-secondary" href="/owner/">العودة للوحة المالك</a>
-          <a class="btn btn-primary" href="/owner/venues-management/">إدارة الملاعب</a>
-        </div>
+      <nav class="nav-links">
+        <a class="nav-link" href="/">الرئيسية</a>
+        <a class="nav-link" href="/venues/">الملاعب</a>
+        <a class="nav-link" href="/booking/">الحجز</a>
+        <a class="nav-link" href="/profile/">حسابي</a>
+        <a class="nav-link" href="/owner/">لوحة المالك</a>
+        <a class="nav-link" href="/admin/">لوحة الأدمن</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a class="btn btn-secondary" href="/login/">الدخول</a>
+        <a class="btn btn-primary" href="/register/">إنشاء حساب</a>
       </div>
-    </header>
+    </div>
+  </header>
 
-    <section class="dashboard-wrap">
-      <div class="container">
-        <h1 class="page-title">إدارة الملاعب</h1>
-        <p class="page-sub">أضف ملعبك وابدأ إدارة منشأتك الرياضية داخل المنصة.</p>
+  <main class="owner-page">
+    <div class="container">
+      <div class="page-head">
+        <h1>إدارة الملاعب</h1>
+        <p>أضف ملاعبك وابدأ إدارة منشآتك الرياضية داخل المنصة.</p>
+      </div>
 
-        <div id="owner-alert" class="notice" style="display:none; margin-top:16px;"></div>
+      <div id="page-message" class="notice-box"></div>
 
-        <div class="grid-2" style="margin-top:20px">
-          <div class="card card-body">
-            <h3 style="margin-top:0">بيانات المالك</h3>
-            <table class="table">
-              <tr><td>الاسم</td><td id="owner-name">—</td></tr>
-              <tr><td>البريد</td><td id="owner-email">—</td></tr>
-              <tr><td>الجوال</td><td id="owner-phone">—</td></tr>
-              <tr><td>الحالة</td><td id="owner-status">—</td></tr>
-            </table>
+      <div class="page-grid">
+        <section class="card-box">
+          <h3>إحصاءات سريعة</h3>
 
-            <div class="toolbar" style="margin-top:16px">
-              <a class="btn btn-secondary" href="/owner/">العودة للوحة المالك</a>
-              <button id="owner-logout-btn" class="btn btn-secondary" type="button">تسجيل الخروج</button>
+          <div class="two-stats">
+            <div class="stat-card">
+              <div id="approved-venues-count" class="num">0</div>
+              <div class="label">ملاعب معتمدة</div>
+            </div>
+
+            <div class="stat-card">
+              <div id="venues-count" class="num">0</div>
+              <div class="label">عدد الملاعب</div>
             </div>
           </div>
 
-          <div class="card card-body">
-            <h3 style="margin-top:0">إحصاءات سريعة</h3>
-            <div class="grid-2">
-              <div class="kpi">
-                <div class="v" id="venues-count">0</div>
-                <div>عدد الملاعب</div>
-              </div>
-              <div class="kpi">
-                <div class="v">0</div>
-                <div>ملاعب معتمدة</div>
-              </div>
-            </div>
-            <p class="small" style="margin-top:16px">
-              هذه الصفحة مربوطة بإنشاء ملعب فعليًا في قاعدة البيانات، وسنضيف لاحقًا عرض قائمة الملاعب المملوكة لك.
-            </p>
+          <p class="small-note">
+            هذه الصفحة مربوطة ببياناتك الحقيقية، وبعد إنشاء ملعب جديد بنجاح سيظهر لاحقًا ضمن قائمة ملاعبك المملوكة لك.
+          </p>
+        </section>
+
+        <section class="card-box">
+          <h3>بيانات المالك</h3>
+
+          <table class="owner-table">
+            <tbody>
+              <tr>
+                <th>الاسم</th>
+                <td id="owner-name">—</td>
+              </tr>
+              <tr>
+                <th>البريد</th>
+                <td id="owner-email">—</td>
+              </tr>
+              <tr>
+                <th>الجوال</th>
+                <td id="owner-phone">—</td>
+              </tr>
+              <tr>
+                <th>الحالة</th>
+                <td id="owner-status">—</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="toolbar-actions">
+            <a class="btn btn-secondary" href="/owner/">العودة للوحة المالك</a>
+            <button id="logout-btn" class="btn btn-secondary" type="button">تسجيل الخروج</button>
           </div>
-        </div>
+        </section>
+      </div>
 
-        <div class="card card-body" style="margin-top:20px">
-          <h3 style="margin-top:0">إضافة ملعب جديد</h3>
+      <section class="card-box" style="margin-top:20px;">
+        <h3>إضافة ملعب جديد</h3>
 
-          <form id="create-venue-form" style="margin-top:16px">
-            <div class="form-grid">
-              <div class="field">
-                <label for="venue-name">اسم الملعب</label>
-                <input id="venue-name" type="text" placeholder="ملعب النخبة" required />
-              </div>
-
-              <div class="field">
-                <label for="venue-sport">نوع الرياضة</label>
-                <select id="venue-sport" required>
-                  <option value="FOOTBALL">كرة قدم</option>
-                  <option value="PADEL">بادل</option>
-                  <option value="TENNIS">تنس</option>
-                  <option value="BASKETBALL">كرة سلة</option>
-                  <option value="VOLLEYBALL">كرة طائرة</option>
-                </select>
-              </div>
-
-              <div class="field">
-                <label for="venue-city">المدينة</label>
-                <select id="venue-city" required disabled>
-                  <option value="">جارٍ تحميل المدن...</option>
-                </select>
-              </div>
-
-              <div class="field">
-                <label for="venue-area">الحي / المنطقة</label>
-                <select id="venue-area" required disabled>
-                  <option value="">اختر المدينة أولًا</option>
-                </select>
-              </div>
-
-              <div class="field">
-                <label for="venue-price">السعر بالساعة</label>
-                <input id="venue-price" type="number" min="1" step="1" placeholder="200" required />
-              </div>
-
-              <div class="field">
-                <label for="venue-capacity">السعة</label>
-                <input id="venue-capacity" type="number" min="1" step="1" placeholder="10" required />
-              </div>
-
-              <div class="field full">
-                <label for="venue-description">الوصف</label>
-                <textarea id="venue-description" rows="4" placeholder="اكتب وصفًا مختصرًا عن الملعب والخدمات المتاحة..." required></textarea>
-              </div>
-
-              <div class="field full">
-                <label for="venue-image">رابط صورة رئيسية</label>
-                <input id="venue-image" type="url" placeholder="https://example.com/image.jpg" />
-              </div>
+        <form id="create-venue-form" style="margin-top:16px;">
+          <div class="form-grid">
+            <div class="field">
+              <label for="venue-name">اسم الملعب</label>
+              <input id="venue-name" type="text" placeholder="ملعب النخبة" required />
             </div>
 
-            <div class="toolbar" style="margin-top:20px">
-              <button id="create-venue-submit" class="btn btn-primary" type="submit">إضافة الملعب</button>
-              <button id="reset-venue-form" class="btn btn-secondary" type="button">مسح الحقول</button>
+            <div class="field">
+              <label for="venue-sport">نوع الرياضة</label>
+              <select id="venue-sport" required>
+                <option value="FOOTBALL">كرة قدم</option>
+                <option value="PADEL">بادل</option>
+                <option value="TENNIS">تنس</option>
+                <option value="BASKETBALL">كرة سلة</option>
+                <option value="VOLLEYBALL">كرة طائرة</option>
+              </select>
             </div>
-          </form>
-        </div>
 
-        <div class="card card-body" style="margin-top:20px">
-          <h3 style="margin-top:0">آخر ملعب تمت إضافته في هذه الجلسة</h3>
-          <div id="latest-venue-box" class="venues-list" style="margin-top:16px;">
-            <div class="small">لم يتم إضافة أي ملعب بعد.</div>
+            <div class="field">
+              <label for="venue-city">المدينة</label>
+              <select id="venue-city" required>
+                <option value="">اختر المدينة</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="venue-area">الحي / المنطقة</label>
+              <select id="venue-area" required disabled>
+                <option value="">اختر المدينة أولاً</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="venue-capacity">السعة</label>
+              <input id="venue-capacity" type="number" min="1" placeholder="10" required />
+            </div>
+
+            <div class="field">
+              <label for="venue-price">السعر بالساعة</label>
+              <input id="venue-price" type="number" min="1" step="1" placeholder="200" required />
+            </div>
+
+            <div class="field field-full">
+              <label for="venue-description">الوصف</label>
+              <textarea id="venue-description" placeholder="اكتب وصفًا مختصرًا عن الملعب والخدمات المتاحة..." required></textarea>
+            </div>
+
+            <div class="field field-full">
+              <label for="venue-image">رابط صورة رئيسية</label>
+              <input id="venue-image" type="url" placeholder="https://example.com/image.jpg" />
+            </div>
           </div>
-        </div>
-      </div>
-    </section>
 
-    <footer class="footer">
-      <div class="container footer-inner">
-        <div>© 2026 ملاعب. منصة حجز ملاعب رياضية.</div>
-        <div>واجهة عربية وتجربة حجز واضحة وسريعة.</div>
-      </div>
-    </footer>
-  </div>
+          <div class="toolbar-actions" style="margin-top:18px;">
+            <button id="create-venue-submit" class="btn btn-primary" type="submit">إضافة الملعب</button>
+            <button id="reset-form-btn" class="btn btn-secondary" type="button">مسح الحقول</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card-box" style="margin-top:20px;">
+        <h3>ملاعبي الحالية</h3>
+
+        <div id="venues-list-wrap" style="margin-top:16px;">
+          <div class="empty-state">جارِ تحميل الملاعب...</div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div>© 2026 ملاعب. منصة حجز ملاعب رياضية.</div>
+      <div>واجهة عربية وتجربة حجز واضحة وسريعة.</div>
+    </div>
+  </footer>
 
   <script src="/assets/api.js"></script>
   <script>
-    function mapStatus(value) {
-      if (value === 'ACTIVE') return 'نشط';
-      if (value === 'PENDING_VERIFICATION') return 'قيد التحقق';
-      if (value === 'SUSPENDED') return 'موقوف';
-      return value || 'غير معروف';
+    const pageMessage = document.getElementById('page-message');
+
+    function showMessage(text, type = 'success') {
+      pageMessage.style.display = 'block';
+      pageMessage.textContent = text;
+      pageMessage.className = 'notice-box ' + (type === 'error' ? 'notice-error' : 'notice-success');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function mapSportLabel(value) {
-      if (value === 'FOOTBALL') return 'كرة قدم';
-      if (value === 'PADEL') return 'بادل';
-      if (value === 'TENNIS') return 'تنس';
-      if (value === 'BASKETBALL') return 'كرة سلة';
-      if (value === 'VOLLEYBALL') return 'كرة طائرة';
-      return value || 'غير محدد';
+    function clearMessage() {
+      pageMessage.style.display = 'none';
+      pageMessage.textContent = '';
+      pageMessage.className = 'notice-box';
     }
 
-    function showAlert(text, isError = false) {
-      const box = document.getElementById('owner-alert');
-      if (!box) return;
-
-      box.style.display = 'block';
-      box.textContent = text;
-      box.style.background = isError ? '#fee2e2' : '#dcfce7';
-      box.style.borderColor = isError ? '#fecaca' : '#bbf7d0';
-      box.style.color = isError ? '#991b1b' : '#166534';
-    }
-
-    function readUser() {
+    function getCurrentUser() {
       try {
-        const localUser = localStorage.getItem('currentUser');
-        if (localUser) return JSON.parse(localUser);
-
-        const sessionUser = sessionStorage.getItem('currentUser');
-        if (sessionUser) return JSON.parse(sessionUser);
-
-        return null;
-      } catch (error) {
-        return null;
+        return JSON.parse(localStorage.getItem('currentUser') || '{}');
+      } catch (e) {
+        return {};
       }
+    }
+
+    function getAccessToken() {
+      return localStorage.getItem('accessToken') || '';
     }
 
     function logout() {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('currentUser');
-      localStorage.removeItem('isAuthenticated');
-      localStorage.removeItem('registeredUserId');
-      localStorage.removeItem('registeredAccountType');
-
-      sessionStorage.removeItem('accessToken');
-      sessionStorage.removeItem('refreshToken');
-      sessionStorage.removeItem('currentUser');
-      sessionStorage.removeItem('isAuthenticated');
-
       window.location.href = '/login/';
     }
 
-    function normalizeCollection(payload) {
-      if (Array.isArray(payload)) return payload;
-      if (Array.isArray(payload?.data)) return payload.data;
-      if (Array.isArray(payload?.items)) return payload.items;
-      if (Array.isArray(payload?.results)) return payload.results;
-      if (Array.isArray(payload?.cities)) return payload.cities;
-      if (Array.isArray(payload?.areas)) return payload.areas;
-      return [];
-    }
+    function requireOwner() {
+      const user = getCurrentUser();
 
-    function getEntityId(entity) {
-      return entity?.id || entity?.cityId || entity?.areaId || entity?.value || '';
-    }
-
-    function getEntityName(entity) {
-      return (
-        entity?.nameArabic ||
-        entity?.name_ar ||
-        entity?.name ||
-        entity?.title ||
-        entity?.label ||
-        ''
-      );
-    }
-
-    async function apiRequestWithAuth(path, options = {}) {
-      const accessToken =
-        localStorage.getItem('accessToken') ||
-        sessionStorage.getItem('accessToken') ||
-        '';
-
-      const response = await fetch(`/api/v1${path}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
-          ...(options.headers || {}),
-        },
-        ...options,
-      });
-
-      const data = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        const message =
-          data?.message ||
-          data?.error ||
-          'حدث خطأ أثناء الاتصال بالخادم';
-
-        throw new Error(Array.isArray(message) ? message.join(', ') : message);
+      if (!user || !user.id) {
+        window.location.href = '/login/';
+        return null;
       }
 
-      return data;
+      if (user.accountType !== 'OWNER') {
+        window.location.href = '/profile/';
+        return null;
+      }
+
+      return user;
     }
 
-    async function fetchCities() {
-      return apiRequestWithAuth('/locations/cities', { method: 'GET' });
+    function fillOwnerInfo(user) {
+      document.getElementById('owner-name').textContent =
+        user.fullName || [user.firstName, user.lastName].filter(Boolean).join(' ') || '—';
+      document.getElementById('owner-email').textContent = user.email || '—';
+      document.getElementById('owner-phone').textContent = user.phone || '—';
+      document.getElementById('owner-status').textContent = user.status || '—';
     }
 
-    async function fetchAreas(cityId) {
-      return apiRequestWithAuth(`/locations/cities/${cityId}/areas`, { method: 'GET' });
-    }
-
-    async function createVenue(payload) {
-      return apiRequestWithAuth('/venues', {
-        method: 'POST',
-        body: JSON.stringify(payload),
+    async function apiGet(path) {
+      return window.API.apiRequest(path, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
       });
     }
 
-    function populateOwner(user) {
-      const displayName =
-        user.fullName ||
-        [user.firstName, user.lastName].filter(Boolean).join(' ').trim() ||
-        user.email ||
-        user.phone ||
-        '—';
-
-      document.getElementById('owner-name').textContent = displayName;
-      document.getElementById('owner-email').textContent = user.email || 'غير مضاف';
-      document.getElementById('owner-phone').textContent = user.phone || 'غير مضاف';
-      document.getElementById('owner-status').textContent = mapStatus(user.status);
+    async function apiPost(path, payload) {
+      return window.API.apiRequest(path, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        },
+        body: JSON.stringify(payload)
+      });
     }
 
-    function renderLatestVenue(venue) {
-      const box = document.getElementById('latest-venue-box');
-      if (!box) return;
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
 
-      box.innerHTML = `
-        <div class="venue-card">
-          <div class="badge-inline">تمت الإضافة</div>
-          <h4>${venue.name || '—'}</h4>
-          <div class="venue-meta">
-            <div><strong>الرياضة:</strong> ${mapSportLabel(venue.sportType)}</div>
-            <div><strong>السعر:</strong> ${venue.hourlyPrice || 0} ريال / ساعة</div>
-            <div><strong>السعة:</strong> ${venue.capacity || 0}</div>
-            <div><strong>المدينة:</strong> ${venue.cityName || '—'}</div>
-            <div><strong>الحي:</strong> ${venue.areaName || '—'}</div>
-            <div><strong>الحالة:</strong> ${venue.status || 'PENDING_REVIEW'}</div>
-          </div>
+    function renderVenues(venues) {
+      const wrap = document.getElementById('venues-list-wrap');
+      const totalEl = document.getElementById('venues-count');
+      const approvedEl = document.getElementById('approved-venues-count');
+
+      const list = Array.isArray(venues) ? venues : [];
+
+      totalEl.textContent = String(list.length);
+      approvedEl.textContent = String(
+        list.filter((v) => (v.status || '').toUpperCase() === 'APPROVED').length
+      );
+
+      if (!list.length) {
+        wrap.innerHTML = '<div class="empty-state">لا توجد ملاعب مضافة بعد. أضف ملعبك الأول من النموذج أعلاه.</div>';
+        return;
+      }
+
+      wrap.innerHTML = `
+        <div style="overflow:auto;">
+          <table class="owner-table">
+            <thead>
+              <tr>
+                <th>اسم الملعب</th>
+                <th>الرياضة</th>
+                <th>المدينة</th>
+                <th>الحي</th>
+                <th>السعر</th>
+                <th>الحالة</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${list.map((venue) => {
+                const status = (venue.status || '').toUpperCase();
+                const statusLabel =
+                  status === 'APPROVED' ? 'معتمد' :
+                  status === 'PENDING' ? 'قيد المراجعة' :
+                  status === 'REJECTED' ? 'مرفوض' :
+                  (venue.status || '—');
+
+                const statusClass =
+                  status === 'APPROVED' ? 'pill pill-success' : 'pill pill-warn';
+
+                const cityName =
+                  venue.city?.nameAr ||
+                  venue.cityNameAr ||
+                  venue.cityName ||
+                  '—';
+
+                const areaName =
+                  venue.area?.nameAr ||
+                  venue.areaNameAr ||
+                  venue.areaName ||
+                  '—';
+
+                return `
+                  <tr>
+                    <td>${escapeHtml(venue.nameAr || venue.name || '—')}</td>
+                    <td>${escapeHtml(venue.sportType || '—')}</td>
+                    <td>${escapeHtml(cityName)}</td>
+                    <td>${escapeHtml(areaName)}</td>
+                    <td>${escapeHtml(venue.pricePerHour || venue.hourlyPrice || venue.price || '—')}</td>
+                    <td><span class="${statusClass}">${escapeHtml(statusLabel)}</span></td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
         </div>
       `;
+    }
 
-      const countBox = document.getElementById('venues-count');
-      if (countBox) {
-        const current = Number(countBox.textContent || '0');
-        countBox.textContent = String(current + 1);
+    async function loadOwnerVenues(user) {
+      try {
+        const ownerProfile = await apiGet(`/owners/${user.id}/profile`).catch(() => null);
+
+        if (!ownerProfile || !ownerProfile.id) {
+          renderVenues([]);
+          return;
+        }
+
+        const allVenues = await apiGet('/venues').catch(() => []);
+        const ownerVenues = Array.isArray(allVenues)
+          ? allVenues.filter((venue) => venue.ownerProfileId === ownerProfile.id)
+          : [];
+
+        renderVenues(ownerVenues);
+      } catch (error) {
+        renderVenues([]);
       }
     }
 
-    async function loadCitiesIntoSelect() {
+    async function loadCities() {
       const citySelect = document.getElementById('venue-city');
-      const areaSelect = document.getElementById('venue-area');
 
-      citySelect.disabled = true;
-      areaSelect.disabled = true;
-      citySelect.innerHTML = '<option value="">جارٍ تحميل المدن...</option>';
-      areaSelect.innerHTML = '<option value="">اختر المدينة أولًا</option>';
+      citySelect.innerHTML = '<option value="">جارِ تحميل المدن...</option>';
 
       try {
-        const payload = await fetchCities();
-        const cities = normalizeCollection(payload);
+        const cities = await window.API.getCities();
 
-        if (!cities.length) {
+        if (!Array.isArray(cities) || cities.length === 0) {
           citySelect.innerHTML = '<option value="">لا توجد مدن متاحة</option>';
-          showAlert('لم تصل أي مدن من الخادم.', true);
           return;
         }
 
@@ -420,149 +575,151 @@
 
         cities.forEach((city) => {
           const option = document.createElement('option');
-          option.value = getEntityId(city);
-          option.textContent = getEntityName(city) || getEntityId(city) || 'مدينة';
+          option.value = city.id;
+          option.textContent = city.nameAr || city.name || city.slug || city.id;
           citySelect.appendChild(option);
         });
-
-        citySelect.disabled = false;
-        areaSelect.innerHTML = '<option value="">اختر المدينة أولًا</option>';
       } catch (error) {
         citySelect.innerHTML = '<option value="">تعذر تحميل المدن</option>';
-        areaSelect.innerHTML = '<option value="">تعذر تحميل الأحياء</option>';
-        showAlert(error.message || 'تعذر تحميل المدن.', true);
       }
     }
 
-    async function loadAreasIntoSelect(cityId) {
+    async function loadAreasByCity(cityId) {
       const areaSelect = document.getElementById('venue-area');
 
       if (!cityId) {
         areaSelect.disabled = true;
-        areaSelect.innerHTML = '<option value="">اختر المدينة أولًا</option>';
+        areaSelect.innerHTML = '<option value="">اختر المدينة أولاً</option>';
         return;
       }
 
       areaSelect.disabled = true;
-      areaSelect.innerHTML = '<option value="">جارٍ تحميل الأحياء...</option>';
+      areaSelect.innerHTML = '<option value="">جارِ تحميل الأحياء...</option>';
 
       try {
-        const payload = await fetchAreas(cityId);
-        const areas = normalizeCollection(payload);
+        const areas = await window.API.apiRequest(`/locations/cities/${cityId}/areas`, {
+          method: 'GET'
+        });
 
-        if (!areas.length) {
+        areaSelect.innerHTML = '';
+
+        if (!Array.isArray(areas) || areas.length === 0) {
           areaSelect.innerHTML = '<option value="">لا توجد أحياء متاحة</option>';
-          showAlert('لا توجد أحياء مرتبطة بهذه المدينة.', true);
+          areaSelect.disabled = false;
           return;
         }
 
-        areaSelect.innerHTML = '<option value="">اختر الحي / المنطقة</option>';
+        const firstOption = document.createElement('option');
+        firstOption.value = '';
+        firstOption.textContent = 'اختر الحي / المنطقة';
+        areaSelect.appendChild(firstOption);
 
         areas.forEach((area) => {
           const option = document.createElement('option');
-          option.value = getEntityId(area);
-          option.textContent = getEntityName(area) || getEntityId(area) || 'حي';
+          option.value = area.id;
+          option.textContent = area.nameAr || area.name || area.slug || area.id;
           areaSelect.appendChild(option);
         });
 
         areaSelect.disabled = false;
       } catch (error) {
         areaSelect.innerHTML = '<option value="">تعذر تحميل الأحياء</option>';
-        showAlert(error.message || 'تعذر تحميل الأحياء.', true);
+        areaSelect.disabled = false;
       }
     }
 
-    function guardOwnerPage() {
-      const user = readUser();
+    function buildVenuePayload(user, ownerProfileId) {
+      const nameAr = document.getElementById('venue-name').value.trim();
+      const sportType = document.getElementById('venue-sport').value;
+      const cityId = document.getElementById('venue-city').value;
+      const areaId = document.getElementById('venue-area').value;
+      const capacity = Number(document.getElementById('venue-capacity').value);
+      const pricePerHour = Number(document.getElementById('venue-price').value);
+      const description = document.getElementById('venue-description').value.trim();
+      const imageUrl = document.getElementById('venue-image').value.trim();
 
-      if (!user || (!user.id && !user.email && !user.phone)) {
-        window.location.replace('/login/');
-        return null;
-      }
-
-      if (user.accountType !== 'OWNER') {
-        window.location.replace('/profile/');
-        return null;
-      }
-
-      return user;
+      return {
+        ownerProfileId,
+        cityId,
+        areaId,
+        nameAr,
+        sportType,
+        capacity,
+        pricePerHour,
+        description,
+        imageUrl,
+        addressLine: description || nameAr,
+        slug: `${nameAr}-${Date.now()}`
+          .toLowerCase()
+          .replace(/\s+/g, '-')
+          .replace(/[^\u0621-\u064A\w-]+/g, ''),
+      };
     }
 
-    document.addEventListener('DOMContentLoaded', async function () {
-      const user = guardOwnerPage();
-      if (!user) return;
-
-      populateOwner(user);
-      document.body.classList.remove('owner-guard-loading');
-      document.documentElement.classList.remove('owner-guard-loading');
-
-      const logoutBtn = document.getElementById('owner-logout-btn');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', logout);
-      }
-
-      await loadCitiesIntoSelect();
-
-      const citySelect = document.getElementById('venue-city');
-      citySelect.addEventListener('change', async function () {
-        await loadAreasIntoSelect(citySelect.value);
-      });
-
+    async function handleCreateVenue(user) {
       const form = document.getElementById('create-venue-form');
       const submitBtn = document.getElementById('create-venue-submit');
-      const resetBtn = document.getElementById('reset-venue-form');
+      const resetBtn = document.getElementById('reset-form-btn');
 
-      form.addEventListener('submit', async function (e) {
+      form.addEventListener('submit', async (e) => {
         e.preventDefault();
-
-        const selectedCity = citySelect.options[citySelect.selectedIndex];
-        const areaSelect = document.getElementById('venue-area');
-        const selectedArea = areaSelect.options[areaSelect.selectedIndex];
-
-        const payload = {
-          ownerUserId: user.id,
-          name: document.getElementById('venue-name').value.trim(),
-          sportType: document.getElementById('venue-sport').value,
-          cityId: citySelect.value,
-          cityName: selectedCity ? selectedCity.textContent : '',
-          areaId: areaSelect.value,
-          areaName: selectedArea ? selectedArea.textContent : '',
-          hourlyPrice: Number(document.getElementById('venue-price').value),
-          capacity: Number(document.getElementById('venue-capacity').value),
-          description: document.getElementById('venue-description').value.trim(),
-          imageUrl: document.getElementById('venue-image').value.trim() || undefined,
-        };
+        clearMessage();
 
         submitBtn.disabled = true;
-        submitBtn.textContent = 'جارٍ إضافة الملعب...';
-        showAlert('جارٍ إرسال بيانات الملعب...');
+        submitBtn.textContent = 'جارِ إضافة الملعب...';
 
         try {
-          const result = await createVenue(payload);
+          const ownerProfile = await apiGet(`/owners/${user.id}/profile`);
 
-          renderLatestVenue(result);
+          if (!ownerProfile || !ownerProfile.id) {
+            throw new Error('لم يتم العثور على ملف المالك.');
+          }
+
+          const payload = buildVenuePayload(user, ownerProfile.id);
+
+          await apiPost('/venues', payload);
+
+          showMessage('تم إرسال الملعب بنجاح. قد يظهر ضمن الحالة قيد المراجعة.');
           form.reset();
+          document.getElementById('venue-area').innerHTML = '<option value="">اختر المدينة أولاً</option>';
           document.getElementById('venue-area').disabled = true;
-          document.getElementById('venue-area').innerHTML =
-            '<option value="">اختر المدينة أولًا</option>';
 
-          showAlert('تمت إضافة الملعب بنجاح.');
+          await loadOwnerVenues(user);
         } catch (error) {
-          showAlert(error.message || 'فشل إضافة الملعب.', true);
+          showMessage(error.message || 'تعذر إضافة الملعب.', 'error');
         } finally {
           submitBtn.disabled = false;
           submitBtn.textContent = 'إضافة الملعب';
         }
       });
 
-      resetBtn.addEventListener('click', function () {
+      resetBtn.addEventListener('click', () => {
         form.reset();
+        document.getElementById('venue-area').innerHTML = '<option value="">اختر المدينة أولاً</option>';
         document.getElementById('venue-area').disabled = true;
-        document.getElementById('venue-area').innerHTML =
-          '<option value="">اختر المدينة أولًا</option>';
-        showAlert('تم مسح الحقول.');
+        clearMessage();
       });
-    });
+    }
+
+    async function initPage() {
+      const user = requireOwner();
+      if (!user) return;
+
+      fillOwnerInfo(user);
+
+      document.getElementById('logout-btn').addEventListener('click', logout);
+
+      const citySelect = document.getElementById('venue-city');
+      citySelect.addEventListener('change', async function () {
+        await loadAreasByCity(this.value);
+      });
+
+      await loadCities();
+      await loadOwnerVenues(user);
+      await handleCreateVenue(user);
+    }
+
+    initPage();
   </script>
 </body>
 </html>
