@@ -176,6 +176,10 @@
       grid-column: 1 / -1;
     }
 
+    .field-hidden {
+      display: none;
+    }
+
     .pill {
       display: inline-block;
       padding: 6px 12px;
@@ -202,6 +206,13 @@
       background: #f8fafc;
       border: 1px dashed #cbd5e1;
       border-radius: 16px;
+    }
+
+    .hint-text {
+      color: #64748b;
+      font-size: 13px;
+      line-height: 1.7;
+      margin-top: 4px;
     }
 
     @media (max-width: 960px) {
@@ -264,7 +275,7 @@
           </div>
 
           <p class="small-note">
-            هذه الصفحة مربوطة ببياناتك الحقيقية، وبعد إنشاء ملعب جديد بنجاح سيظهر لاحقًا ضمن قائمة ملاعبك المملوكة لك.
+            هذه الصفحة مربوطة ببياناتك الحقيقية. يمكنك البحث داخل المدن والأحياء بسرعة، وإذا لم تجد الموقع المناسب فستجد خيار "أخرى" في أسفل كل قائمة.
           </p>
         </section>
 
@@ -321,10 +332,26 @@
             </div>
 
             <div class="field">
+              <label for="city-search">البحث عن مدينة</label>
+              <input id="city-search" type="text" placeholder="ابحث باسم المدينة..." />
+            </div>
+
+            <div class="field">
               <label for="venue-city">المدينة</label>
               <select id="venue-city" required>
                 <option value="">اختر المدينة</option>
               </select>
+              <div class="hint-text">اكتب في مربع البحث بالأعلى لتصفية المدن بسرعة.</div>
+            </div>
+
+            <div id="custom-city-wrap" class="field field-hidden">
+              <label for="custom-city-name">اسم المدينة / القرية / المركز</label>
+              <input id="custom-city-name" type="text" placeholder="اكتب الاسم كما تريده" />
+            </div>
+
+            <div class="field">
+              <label for="area-search">البحث عن حي</label>
+              <input id="area-search" type="text" placeholder="ابحث باسم الحي..." />
             </div>
 
             <div class="field">
@@ -332,6 +359,12 @@
               <select id="venue-area" required disabled>
                 <option value="">اختر المدينة أولاً</option>
               </select>
+              <div class="hint-text">إذا لم تجد الحي المطلوب، اختر "أخرى".</div>
+            </div>
+
+            <div id="custom-area-wrap" class="field field-hidden">
+              <label for="custom-area-name">اسم الحي / الموقع المحلي</label>
+              <input id="custom-area-name" type="text" placeholder="اكتب الحي أو الوصف المحلي" />
             </div>
 
             <div class="field">
@@ -379,9 +412,12 @@
     </div>
   </footer>
 
-  <script src="/assets/api.js"></script>
   <script>
     const pageMessage = document.getElementById('page-message');
+    const OTHER_VALUE = '__OTHER__';
+
+    let allCities = [];
+    let allAreas = [];
 
     function showMessage(text, type = 'success') {
       pageMessage.style.display = 'block';
@@ -398,20 +434,31 @@
 
     function getCurrentUser() {
       try {
-        return JSON.parse(localStorage.getItem('currentUser') || '{}');
+        const local = localStorage.getItem('currentUser');
+        if (local) return JSON.parse(local);
+
+        const session = sessionStorage.getItem('currentUser');
+        if (session) return JSON.parse(session);
+
+        return {};
       } catch (e) {
         return {};
       }
     }
 
     function getAccessToken() {
-      return localStorage.getItem('accessToken') || '';
+      return localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken') || '';
     }
 
     function logout() {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('currentUser');
+      localStorage.removeItem('isAuthenticated');
+      sessionStorage.removeItem('accessToken');
+      sessionStorage.removeItem('refreshToken');
+      sessionStorage.removeItem('currentUser');
+      sessionStorage.removeItem('isAuthenticated');
       window.location.href = '/login/';
     }
 
@@ -439,23 +486,24 @@
       document.getElementById('owner-status').textContent = user.status || '—';
     }
 
-    async function apiGet(path) {
-      return window.API.apiRequest(path, {
-        method: 'GET',
+    async function httpJson(path, options = {}) {
+      const response = await fetch(`/api/v1${path}`, {
         headers: {
-          Authorization: `Bearer ${getAccessToken()}`
-        }
-      });
-    }
-
-    async function apiPost(path, payload) {
-      return window.API.apiRequest(path, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${getAccessToken()}`
+          'Content-Type': 'application/json',
+          ...(getAccessToken() ? { Authorization: `Bearer ${getAccessToken()}` } : {}),
+          ...(options.headers || {})
         },
-        body: JSON.stringify(payload)
+        ...options
       });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        const message = data?.message || data?.error || 'حدث خطأ أثناء الاتصال بالخادم';
+        throw new Error(Array.isArray(message) ? message.join(', ') : message);
+      }
+
+      return data;
     }
 
     function escapeHtml(value) {
@@ -465,6 +513,29 @@
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
+    }
+
+    function getArabicName(item) {
+      return (
+        item?.nameAr ||
+        item?.name_ar ||
+        item?.nameArabic ||
+        item?.name ||
+        item?.title ||
+        item?.slug ||
+        item?.id ||
+        ''
+      );
+    }
+
+    function normalizeCollection(payload) {
+      if (Array.isArray(payload)) return payload;
+      if (Array.isArray(payload?.data)) return payload.data;
+      if (Array.isArray(payload?.items)) return payload.items;
+      if (Array.isArray(payload?.results)) return payload.results;
+      if (Array.isArray(payload?.cities)) return payload.cities;
+      if (Array.isArray(payload?.areas)) return payload.areas;
+      return [];
     }
 
     function renderVenues(venues) {
@@ -540,14 +611,14 @@
 
     async function loadOwnerVenues(user) {
       try {
-        const ownerProfile = await apiGet(`/owners/${user.id}/profile`).catch(() => null);
+        const ownerProfile = await httpJson(`/owners/${user.id}/profile`, { method: 'GET' }).catch(() => null);
 
         if (!ownerProfile || !ownerProfile.id) {
           renderVenues([]);
           return;
         }
 
-        const allVenues = await apiGet('/venues').catch(() => []);
+        const allVenues = await httpJson('/venues', { method: 'GET' }).catch(() => []);
         const ownerVenues = Array.isArray(allVenues)
           ? allVenues.filter((venue) => venue.ownerProfileId === ownerProfile.id)
           : [];
@@ -558,27 +629,110 @@
       }
     }
 
+    function toggleCustomCityField() {
+      const cityValue = document.getElementById('venue-city').value;
+      const wrap = document.getElementById('custom-city-wrap');
+      const input = document.getElementById('custom-city-name');
+
+      if (cityValue === OTHER_VALUE) {
+        wrap.classList.remove('field-hidden');
+        input.required = true;
+      } else {
+        wrap.classList.add('field-hidden');
+        input.required = false;
+        input.value = '';
+      }
+    }
+
+    function toggleCustomAreaField() {
+      const areaValue = document.getElementById('venue-area').value;
+      const wrap = document.getElementById('custom-area-wrap');
+      const input = document.getElementById('custom-area-name');
+
+      if (areaValue === OTHER_VALUE) {
+        wrap.classList.remove('field-hidden');
+        input.required = true;
+      } else {
+        wrap.classList.add('field-hidden');
+        input.required = false;
+        input.value = '';
+      }
+    }
+
+    function renderCityOptions() {
+      const citySelect = document.getElementById('venue-city');
+      const searchTerm = document.getElementById('city-search').value.trim().toLowerCase();
+
+      citySelect.innerHTML = '';
+
+      const firstOption = document.createElement('option');
+      firstOption.value = '';
+      firstOption.textContent = 'اختر المدينة';
+      citySelect.appendChild(firstOption);
+
+      const filteredCities = allCities.filter((city) => {
+        const text = getArabicName(city).toLowerCase();
+        return !searchTerm || text.includes(searchTerm);
+      });
+
+      filteredCities.forEach((city) => {
+        const option = document.createElement('option');
+        option.value = city.id;
+        option.textContent = getArabicName(city);
+        citySelect.appendChild(option);
+      });
+
+      const otherOption = document.createElement('option');
+      otherOption.value = OTHER_VALUE;
+      otherOption.textContent = 'أخرى';
+      citySelect.appendChild(otherOption);
+    }
+
+    function renderAreaOptions() {
+      const areaSelect = document.getElementById('venue-area');
+      const searchTerm = document.getElementById('area-search').value.trim().toLowerCase();
+
+      areaSelect.innerHTML = '';
+
+      const firstOption = document.createElement('option');
+      firstOption.value = '';
+      firstOption.textContent = allAreas.length ? 'اختر الحي / المنطقة' : 'لا توجد أحياء متاحة';
+      areaSelect.appendChild(firstOption);
+
+      const filteredAreas = allAreas.filter((area) => {
+        const text = getArabicName(area).toLowerCase();
+        return !searchTerm || text.includes(searchTerm);
+      });
+
+      filteredAreas.forEach((area) => {
+        const option = document.createElement('option');
+        option.value = area.id;
+        option.textContent = getArabicName(area);
+        areaSelect.appendChild(option);
+      });
+
+      const otherOption = document.createElement('option');
+      otherOption.value = OTHER_VALUE;
+      otherOption.textContent = 'أخرى';
+      areaSelect.appendChild(otherOption);
+
+      areaSelect.disabled = false;
+    }
+
     async function loadCities() {
       const citySelect = document.getElementById('venue-city');
-
       citySelect.innerHTML = '<option value="">جارِ تحميل المدن...</option>';
 
       try {
-        const cities = await window.API.getCities();
+        const citiesPayload = await httpJson('/locations/cities', { method: 'GET' });
+        allCities = normalizeCollection(citiesPayload);
 
-        if (!Array.isArray(cities) || cities.length === 0) {
+        if (!allCities.length) {
           citySelect.innerHTML = '<option value="">لا توجد مدن متاحة</option>';
           return;
         }
 
-        citySelect.innerHTML = '<option value="">اختر المدينة</option>';
-
-        cities.forEach((city) => {
-          const option = document.createElement('option');
-          option.value = city.id;
-          option.textContent = city.nameAr || city.name || city.slug || city.id;
-          citySelect.appendChild(option);
-        });
+        renderCityOptions();
       } catch (error) {
         citySelect.innerHTML = '<option value="">تعذر تحميل المدن</option>';
       }
@@ -586,6 +740,11 @@
 
     async function loadAreasByCity(cityId) {
       const areaSelect = document.getElementById('venue-area');
+      const areaSearch = document.getElementById('area-search');
+
+      allAreas = [];
+      areaSearch.value = '';
+      toggleCustomAreaField();
 
       if (!cityId) {
         areaSelect.disabled = true;
@@ -593,46 +752,38 @@
         return;
       }
 
+      if (cityId === OTHER_VALUE) {
+        areaSelect.disabled = false;
+        renderAreaOptions();
+        toggleCustomCityField();
+        return;
+      }
+
+      toggleCustomCityField();
+
       areaSelect.disabled = true;
       areaSelect.innerHTML = '<option value="">جارِ تحميل الأحياء...</option>';
 
       try {
-        const areas = await window.API.apiRequest(`/locations/cities/${cityId}/areas`, {
-          method: 'GET'
-        });
-
-        areaSelect.innerHTML = '';
-
-        if (!Array.isArray(areas) || areas.length === 0) {
-          areaSelect.innerHTML = '<option value="">لا توجد أحياء متاحة</option>';
-          areaSelect.disabled = false;
-          return;
-        }
-
-        const firstOption = document.createElement('option');
-        firstOption.value = '';
-        firstOption.textContent = 'اختر الحي / المنطقة';
-        areaSelect.appendChild(firstOption);
-
-        areas.forEach((area) => {
-          const option = document.createElement('option');
-          option.value = area.id;
-          option.textContent = area.nameAr || area.name || area.slug || area.id;
-          areaSelect.appendChild(option);
-        });
-
-        areaSelect.disabled = false;
+        const areasPayload = await httpJson(`/locations/cities/${cityId}/areas`, { method: 'GET' });
+        allAreas = normalizeCollection(areasPayload);
+        renderAreaOptions();
       } catch (error) {
-        areaSelect.innerHTML = '<option value="">تعذر تحميل الأحياء</option>';
-        areaSelect.disabled = false;
+        allAreas = [];
+        renderAreaOptions();
       }
     }
 
     function buildVenuePayload(user, ownerProfileId) {
-      const nameAr = document.getElementById('venue-name').value.trim();
-      const sportType = document.getElementById('venue-sport').value;
       const cityId = document.getElementById('venue-city').value;
       const areaId = document.getElementById('venue-area').value;
+
+      if (cityId === OTHER_VALUE || areaId === OTHER_VALUE) {
+        throw new Error('خيار "أخرى" تمت إضافته في الواجهة، وتفعيل حفظه في قاعدة البيانات سيكون في الخطوة التالية.');
+      }
+
+      const nameAr = document.getElementById('venue-name').value.trim();
+      const sportType = document.getElementById('venue-sport').value;
       const capacity = Number(document.getElementById('venue-capacity').value);
       const pricePerHour = Number(document.getElementById('venue-price').value);
       const description = document.getElementById('venue-description').value.trim();
@@ -669,7 +820,7 @@
         submitBtn.textContent = 'جارِ إضافة الملعب...';
 
         try {
-          const ownerProfile = await apiGet(`/owners/${user.id}/profile`);
+          const ownerProfile = await httpJson(`/owners/${user.id}/profile`, { method: 'GET' });
 
           if (!ownerProfile || !ownerProfile.id) {
             throw new Error('لم يتم العثور على ملف المالك.');
@@ -677,12 +828,20 @@
 
           const payload = buildVenuePayload(user, ownerProfile.id);
 
-          await apiPost('/venues', payload);
+          await httpJson('/venues', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+          });
 
           showMessage('تم إرسال الملعب بنجاح. قد يظهر ضمن الحالة قيد المراجعة.');
           form.reset();
           document.getElementById('venue-area').innerHTML = '<option value="">اختر المدينة أولاً</option>';
           document.getElementById('venue-area').disabled = true;
+          document.getElementById('city-search').value = '';
+          document.getElementById('area-search').value = '';
+          toggleCustomCityField();
+          toggleCustomAreaField();
+          renderCityOptions();
 
           await loadOwnerVenues(user);
         } catch (error) {
@@ -697,6 +856,11 @@
         form.reset();
         document.getElementById('venue-area').innerHTML = '<option value="">اختر المدينة أولاً</option>';
         document.getElementById('venue-area').disabled = true;
+        document.getElementById('city-search').value = '';
+        document.getElementById('area-search').value = '';
+        toggleCustomCityField();
+        toggleCustomAreaField();
+        renderCityOptions();
         clearMessage();
       });
     }
@@ -709,9 +873,20 @@
 
       document.getElementById('logout-btn').addEventListener('click', logout);
 
-      const citySelect = document.getElementById('venue-city');
-      citySelect.addEventListener('change', async function () {
+      document.getElementById('city-search').addEventListener('input', () => {
+        renderCityOptions();
+      });
+
+      document.getElementById('area-search').addEventListener('input', () => {
+        renderAreaOptions();
+      });
+
+      document.getElementById('venue-city').addEventListener('change', async function () {
         await loadAreasByCity(this.value);
+      });
+
+      document.getElementById('venue-area').addEventListener('change', function () {
+        toggleCustomAreaField();
       });
 
       await loadCities();
