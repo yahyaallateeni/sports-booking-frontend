@@ -172,14 +172,14 @@
 
               <div class="field">
                 <label for="venue-city">المدينة</label>
-                <select id="venue-city" required>
+                <select id="venue-city" required disabled>
                   <option value="">جارٍ تحميل المدن...</option>
                 </select>
               </div>
 
               <div class="field">
                 <label for="venue-area">الحي / المنطقة</label>
-                <select id="venue-area" required>
+                <select id="venue-area" required disabled>
                   <option value="">اختر المدينة أولًا</option>
                 </select>
               </div>
@@ -288,6 +288,31 @@
       window.location.href = '/login/';
     }
 
+    function normalizeCollection(payload) {
+      if (Array.isArray(payload)) return payload;
+      if (Array.isArray(payload?.data)) return payload.data;
+      if (Array.isArray(payload?.items)) return payload.items;
+      if (Array.isArray(payload?.results)) return payload.results;
+      if (Array.isArray(payload?.cities)) return payload.cities;
+      if (Array.isArray(payload?.areas)) return payload.areas;
+      return [];
+    }
+
+    function getEntityId(entity) {
+      return entity?.id || entity?.cityId || entity?.areaId || entity?.value || '';
+    }
+
+    function getEntityName(entity) {
+      return (
+        entity?.nameArabic ||
+        entity?.name_ar ||
+        entity?.name ||
+        entity?.title ||
+        entity?.label ||
+        ''
+      );
+    }
+
     async function apiRequestWithAuth(path, options = {}) {
       const accessToken =
         localStorage.getItem('accessToken') ||
@@ -318,15 +343,11 @@
     }
 
     async function fetchCities() {
-      return apiRequestWithAuth('/locations/cities', {
-        method: 'GET',
-      });
+      return apiRequestWithAuth('/locations/cities', { method: 'GET' });
     }
 
     async function fetchAreas(cityId) {
-      return apiRequestWithAuth(`/locations/cities/${cityId}/areas`, {
-        method: 'GET',
-      });
+      return apiRequestWithAuth(`/locations/cities/${cityId}/areas`, { method: 'GET' });
     }
 
     async function createVenue(payload) {
@@ -380,18 +401,31 @@
       const citySelect = document.getElementById('venue-city');
       const areaSelect = document.getElementById('venue-area');
 
+      citySelect.disabled = true;
+      areaSelect.disabled = true;
+      citySelect.innerHTML = '<option value="">جارٍ تحميل المدن...</option>';
+      areaSelect.innerHTML = '<option value="">اختر المدينة أولًا</option>';
+
       try {
-        const cities = await fetchCities();
+        const payload = await fetchCities();
+        const cities = normalizeCollection(payload);
+
+        if (!cities.length) {
+          citySelect.innerHTML = '<option value="">لا توجد مدن متاحة</option>';
+          showAlert('لم تصل أي مدن من الخادم.', true);
+          return;
+        }
 
         citySelect.innerHTML = '<option value="">اختر المدينة</option>';
 
         cities.forEach((city) => {
           const option = document.createElement('option');
-          option.value = city.id;
-          option.textContent = city.nameArabic || city.name || city.id;
+          option.value = getEntityId(city);
+          option.textContent = getEntityName(city) || getEntityId(city) || 'مدينة';
           citySelect.appendChild(option);
         });
 
+        citySelect.disabled = false;
         areaSelect.innerHTML = '<option value="">اختر المدينة أولًا</option>';
       } catch (error) {
         citySelect.innerHTML = '<option value="">تعذر تحميل المدن</option>';
@@ -404,21 +438,34 @@
       const areaSelect = document.getElementById('venue-area');
 
       if (!cityId) {
+        areaSelect.disabled = true;
         areaSelect.innerHTML = '<option value="">اختر المدينة أولًا</option>';
         return;
       }
 
+      areaSelect.disabled = true;
+      areaSelect.innerHTML = '<option value="">جارٍ تحميل الأحياء...</option>';
+
       try {
-        const areas = await fetchAreas(cityId);
+        const payload = await fetchAreas(cityId);
+        const areas = normalizeCollection(payload);
+
+        if (!areas.length) {
+          areaSelect.innerHTML = '<option value="">لا توجد أحياء متاحة</option>';
+          showAlert('لا توجد أحياء مرتبطة بهذه المدينة.', true);
+          return;
+        }
 
         areaSelect.innerHTML = '<option value="">اختر الحي / المنطقة</option>';
 
         areas.forEach((area) => {
           const option = document.createElement('option');
-          option.value = area.id;
-          option.textContent = area.nameArabic || area.name || area.id;
+          option.value = getEntityId(area);
+          option.textContent = getEntityName(area) || getEntityId(area) || 'حي';
           areaSelect.appendChild(option);
         });
+
+        areaSelect.disabled = false;
       } catch (error) {
         areaSelect.innerHTML = '<option value="">تعذر تحميل الأحياء</option>';
         showAlert(error.message || 'تعذر تحميل الأحياء.', true);
@@ -495,6 +542,7 @@
 
           renderLatestVenue(result);
           form.reset();
+          document.getElementById('venue-area').disabled = true;
           document.getElementById('venue-area').innerHTML =
             '<option value="">اختر المدينة أولًا</option>';
 
@@ -509,6 +557,7 @@
 
       resetBtn.addEventListener('click', function () {
         form.reset();
+        document.getElementById('venue-area').disabled = true;
         document.getElementById('venue-area').innerHTML =
           '<option value="">اختر المدينة أولًا</option>';
         showAlert('تم مسح الحقول.');
