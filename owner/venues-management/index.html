@@ -206,6 +206,16 @@
       color: #92400e;
     }
 
+    .pill-danger {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .pill-neutral {
+      background: #e2e8f0;
+      color: #334155;
+    }
+
     .empty-state {
       padding: 18px;
       text-align: center;
@@ -280,10 +290,119 @@
       background: #eff6ff;
     }
 
+    .venues-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .venues-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .venue-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      overflow: hidden;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+
+    .venue-card-image {
+      width: 100%;
+      height: 190px;
+      object-fit: cover;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .venue-card-placeholder {
+      width: 100%;
+      height: 190px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #eff6ff, #f8fafc);
+      color: #475569;
+      font-weight: 700;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .venue-card-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .venue-card-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .venue-card-title {
+      margin: 0;
+      font-size: 20px;
+      color: #0f172a;
+    }
+
+    .venue-card-sub {
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    .venue-meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 14px;
+    }
+
+    .venue-meta-item {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 10px 12px;
+    }
+
+    .venue-meta-label {
+      display: block;
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 4px;
+    }
+
+    .venue-meta-value {
+      color: #0f172a;
+      font-weight: 700;
+      font-size: 14px;
+      word-break: break-word;
+    }
+
+    .venue-description {
+      margin: 0;
+      color: #334155;
+      line-height: 1.8;
+      font-size: 14px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 12px;
+    }
+
     @media (max-width: 960px) {
       .page-grid,
       .form-grid,
-      .two-stats {
+      .two-stats,
+      .venues-grid,
+      .venue-meta-grid {
         grid-template-columns: 1fr;
       }
 
@@ -456,7 +575,10 @@
       </section>
 
       <section class="card-box" style="margin-top:20px;">
-        <h3>ملاعبي الحالية</h3>
+        <div class="venues-header">
+          <h3 style="margin:0">ملاعبي الحالية</h3>
+          <button id="refresh-venues-btn" class="btn btn-secondary" type="button">تحديث القائمة</button>
+        </div>
 
         <div id="venues-list-wrap" style="margin-top:16px;">
           <div class="empty-state">جارِ تحميل الملاعب...</div>
@@ -479,6 +601,7 @@
     let allCities = [];
     let filteredCities = [];
     let allAreas = [];
+    let cachedUser = null;
 
     function showMessage(text, type = 'success') {
       pageMessage.style.display = 'block';
@@ -610,6 +733,14 @@
       };
     }
 
+    function normalizeStatus(status) {
+      const value = String(status || '').toUpperCase();
+      if (value === 'APPROVED') return { label: 'معتمد', cls: 'pill pill-success' };
+      if (value === 'PENDING') return { label: 'قيد المراجعة', cls: 'pill pill-warn' };
+      if (value === 'REJECTED') return { label: 'مرفوض', cls: 'pill pill-danger' };
+      return { label: status || 'غير معروف', cls: 'pill pill-neutral' };
+    }
+
     function renderVenues(venues) {
       const wrap = document.getElementById('venues-list-wrap');
       const totalEl = document.getElementById('venues-count');
@@ -619,7 +750,7 @@
 
       totalEl.textContent = String(list.length);
       approvedEl.textContent = String(
-        list.filter((v) => (v.status || '').toUpperCase() === 'APPROVED').length
+        list.filter((v) => String(v.status || '').toUpperCase() === 'APPROVED').length
       );
 
       if (!list.length) {
@@ -628,65 +759,79 @@
       }
 
       wrap.innerHTML = `
-        <div style="overflow:auto;">
-          <table class="owner-table">
-            <thead>
-              <tr>
-                <th>اسم الملعب</th>
-                <th>الرياضة</th>
-                <th>المدينة</th>
-                <th>الحي</th>
-                <th>السعر</th>
-                <th>الحالة</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${list.map((venue) => {
-                const status = (venue.status || '').toUpperCase();
-                const statusLabel =
-                  status === 'APPROVED' ? 'معتمد' :
-                  status === 'PENDING' ? 'قيد المراجعة' :
-                  status === 'REJECTED' ? 'مرفوض' :
-                  (venue.status || '—');
+        <div class="venues-grid">
+          ${list.map((venue) => {
+            const meta = extractCustomMeta(venue.description || '');
+            const statusInfo = normalizeStatus(venue.status);
 
-                const statusClass =
-                  status === 'APPROVED' ? 'pill pill-success' : 'pill pill-warn';
+            let cityName =
+              venue.city?.nameAr ||
+              venue.cityNameAr ||
+              venue.cityName ||
+              '—';
 
-                const meta = extractCustomMeta(venue.description || '');
+            let areaName =
+              venue.area?.nameAr ||
+              venue.areaNameAr ||
+              venue.areaName ||
+              '—';
 
-                let cityName =
-                  venue.city?.nameAr ||
-                  venue.cityNameAr ||
-                  venue.cityName ||
-                  '—';
+            if (cityName === 'أخرى' && meta.customCity) {
+              cityName = meta.customCity;
+            }
 
-                let areaName =
-                  venue.area?.nameAr ||
-                  venue.areaNameAr ||
-                  venue.areaName ||
-                  '—';
+            if (areaName === 'أخرى' && meta.customArea) {
+              areaName = meta.customArea;
+            }
 
-                if (cityName === 'أخرى' && meta.customCity) {
-                  cityName = meta.customCity;
-                }
+            const description = String(venue.description || '')
+              .replace(/\[CUSTOM_CITY\]:(.*?)(\n|$)/g, '')
+              .replace(/\[CUSTOM_AREA\]:(.*?)(\n|$)/g, '')
+              .trim();
 
-                if (areaName === 'أخرى' && meta.customArea) {
-                  areaName = meta.customArea;
-                }
+            const imageBlock = venue.imageUrl
+              ? `<img class="venue-card-image" src="${escapeHtml(venue.imageUrl)}" alt="${escapeHtml(venue.nameAr || venue.name || 'ملعب')}" />`
+              : `<div class="venue-card-placeholder">لا توجد صورة</div>`;
 
-                return `
-                  <tr>
-                    <td>${escapeHtml(venue.nameAr || venue.name || '—')}</td>
-                    <td>${escapeHtml(venue.sportType || '—')}</td>
-                    <td>${escapeHtml(cityName)}</td>
-                    <td>${escapeHtml(areaName)}</td>
-                    <td>${escapeHtml(venue.pricePerHour || venue.defaultHourlyPrice || venue.hourlyPrice || venue.price || '—')}</td>
-                    <td><span class="${statusClass}">${escapeHtml(statusLabel)}</span></td>
-                  </tr>
-                `;
-              }).join('')}
-            </tbody>
-          </table>
+            return `
+              <article class="venue-card">
+                ${imageBlock}
+                <div class="venue-card-body">
+                  <div class="venue-card-head">
+                    <div>
+                      <h4 class="venue-card-title">${escapeHtml(venue.nameAr || venue.name || '—')}</h4>
+                      <div class="venue-card-sub">${escapeHtml(venue.sportType || '—')}</div>
+                    </div>
+                    <span class="${statusInfo.cls}">${escapeHtml(statusInfo.label)}</span>
+                  </div>
+
+                  <div class="venue-meta-grid">
+                    <div class="venue-meta-item">
+                      <span class="venue-meta-label">المدينة</span>
+                      <span class="venue-meta-value">${escapeHtml(cityName)}</span>
+                    </div>
+
+                    <div class="venue-meta-item">
+                      <span class="venue-meta-label">الحي</span>
+                      <span class="venue-meta-value">${escapeHtml(areaName)}</span>
+                    </div>
+
+                    <div class="venue-meta-item">
+                      <span class="venue-meta-label">السعر بالساعة</span>
+                      <span class="venue-meta-value">${escapeHtml(venue.pricePerHour || venue.defaultHourlyPrice || venue.hourlyPrice || venue.price || '—')}</span>
+                    </div>
+
+                    <div class="venue-meta-item">
+                      <span class="venue-meta-label">السعة</span>
+                      <span class="venue-meta-value">${escapeHtml(venue.capacity || '—')}</span>
+                    </div>
+                  </div>
+
+                  <p class="venue-description">${escapeHtml(description || 'لا يوجد وصف مضاف بعد.')}</p>
+                </div>
+              </article>
+            `;
+          }).join('')}
         </div>
       `;
     }
@@ -722,6 +867,12 @@
 
     async function loadOwnerVenues(user) {
       try {
+        const refreshBtn = document.getElementById('refresh-venues-btn');
+        if (refreshBtn) {
+          refreshBtn.disabled = true;
+          refreshBtn.textContent = 'جارِ التحديث...';
+        }
+
         const ownerProfile = await getOrCreateOwnerProfile(user);
 
         if (!ownerProfile || !ownerProfile.id) {
@@ -737,6 +888,12 @@
         renderVenues(ownerVenues);
       } catch (error) {
         renderVenues([]);
+      } finally {
+        const refreshBtn = document.getElementById('refresh-venues-btn');
+        if (refreshBtn) {
+          refreshBtn.disabled = false;
+          refreshBtn.textContent = 'تحديث القائمة';
+        }
       }
     }
 
@@ -1070,9 +1227,16 @@
       const user = requireOwner();
       if (!user) return;
 
+      cachedUser = user;
       fillOwnerInfo(user);
 
       document.getElementById('logout-btn').addEventListener('click', logout);
+      document.getElementById('refresh-venues-btn').addEventListener('click', async function () {
+        if (cachedUser) {
+          await loadOwnerVenues(cachedUser);
+        }
+      });
+
       document.getElementById('venue-area').addEventListener('change', function () {
         toggleCustomAreaField();
       });
