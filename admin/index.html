@@ -7,287 +7,54 @@
   <link rel="stylesheet" href="/assets/styles.css" />
   <script defer src="/assets/app.js"></script>
   <style>
-    .admin-page {
-      padding: 32px 0 48px;
+    .admin-page { padding: 32px 0 48px; }
+    .page-head { margin-bottom: 24px; }
+    .page-head h1 { margin: 0 0 8px; font-size: 42px; color: #0f172a; }
+    .page-head p { margin: 0; color: #475569; line-height: 1.8; }
+    .notice-box { display: none; padding: 14px 16px; border-radius: 14px; margin-bottom: 18px; font-size: 14px; line-height: 1.7; border: 1px solid transparent; }
+    .notice-success { background: #dcfce7; color: #166534; border-color: #bbf7d0; }
+    .notice-error { background: #fee2e2; color: #991b1b; border-color: #fecaca; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 20px; }
+    .stat-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 20px; text-align: center; }
+    .stat-card .num { font-size: 52px; line-height: 1; font-weight: 800; color: #0f172a; margin-bottom: 10px; }
+    .stat-card .label { color: #334155; font-weight: 700; }
+    .card-box { background: #fff; border: 1px solid #e2e8f0; border-radius: 22px; padding: 22px; }
+    .toolbar { display: grid; grid-template-columns: 1.3fr 0.8fr 0.8fr auto; gap: 12px; align-items: end; margin-bottom: 20px; }
+    .field { display: flex; flex-direction: column; gap: 8px; }
+    .field label { font-size: 14px; font-weight: 700; color: #334155; }
+    .field input, .field select {
+      width: 100%; min-height: 48px; border: 1px solid #cbd5e1; border-radius: 14px;
+      padding: 12px 14px; font: inherit; background: #fff; color: #0f172a; outline: none; box-sizing: border-box;
     }
-
-    .page-head {
-      margin-bottom: 24px;
-    }
-
-    .page-head h1 {
-      margin: 0 0 8px;
-      font-size: 42px;
-      color: #0f172a;
-    }
-
-    .page-head p {
-      margin: 0;
-      color: #475569;
-      line-height: 1.8;
-    }
-
-    .notice-box {
-      display: none;
-      padding: 14px 16px;
-      border-radius: 14px;
-      margin-bottom: 18px;
-      font-size: 14px;
-      line-height: 1.7;
-      border: 1px solid transparent;
-    }
-
-    .notice-success {
-      background: #dcfce7;
-      color: #166534;
-      border-color: #bbf7d0;
-    }
-
-    .notice-error {
-      background: #fee2e2;
-      color: #991b1b;
-      border-color: #fecaca;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 16px;
-      margin-bottom: 20px;
-    }
-
-    .stat-card {
-      background: #fff;
-      border: 1px solid #e2e8f0;
-      border-radius: 20px;
-      padding: 20px;
-      text-align: center;
-    }
-
-    .stat-card .num {
-      font-size: 52px;
-      line-height: 1;
-      font-weight: 800;
-      color: #0f172a;
-      margin-bottom: 10px;
-    }
-
-    .stat-card .label {
-      color: #334155;
-      font-weight: 700;
-    }
-
-    .card-box {
-      background: #fff;
-      border: 1px solid #e2e8f0;
-      border-radius: 22px;
-      padding: 22px;
-    }
-
-    .toolbar {
-      display: grid;
-      grid-template-columns: 1.3fr 0.8fr 0.8fr auto;
-      gap: 12px;
-      align-items: end;
-      margin-bottom: 20px;
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .field label {
-      font-size: 14px;
-      font-weight: 700;
-      color: #334155;
-    }
-
-    .field input,
-    .field select {
-      width: 100%;
-      min-height: 48px;
-      border: 1px solid #cbd5e1;
-      border-radius: 14px;
-      padding: 12px 14px;
-      font: inherit;
-      background: #fff;
-      color: #0f172a;
-      outline: none;
-      box-sizing: border-box;
-    }
-
-    .toolbar-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .venues-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px;
-    }
-
-    .venue-card {
-      border: 1px solid #e2e8f0;
-      border-radius: 20px;
-      overflow: hidden;
-      background: #fff;
-      display: flex;
-      flex-direction: column;
-      min-height: 100%;
-    }
-
-    .venue-card-image {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      background: #f8fafc;
-      border-bottom: 1px solid #e2e8f0;
-    }
-
+    .toolbar-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .venues-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .venue-card { border: 1px solid #e2e8f0; border-radius: 20px; overflow: hidden; background: #fff; display: flex; flex-direction: column; min-height: 100%; }
+    .venue-card-image { width: 100%; height: 200px; object-fit: cover; background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
     .venue-card-placeholder {
-      width: 100%;
-      height: 200px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #eff6ff, #f8fafc);
-      color: #475569;
-      font-weight: 700;
-      border-bottom: 1px solid #e2e8f0;
+      width: 100%; height: 200px; display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #eff6ff, #f8fafc); color: #475569; font-weight: 700; border-bottom: 1px solid #e2e8f0;
     }
-
-    .venue-card-body {
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .venue-card-head {
-      display: flex;
-      align-items: start;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .venue-card-title {
-      margin: 0;
-      font-size: 20px;
-      color: #0f172a;
-    }
-
-    .venue-card-sub {
-      color: #64748b;
-      font-size: 14px;
-      margin-top: 4px;
-    }
-
-    .venue-meta-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px 14px;
-    }
-
-    .venue-meta-item {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 14px;
-      padding: 10px 12px;
-    }
-
-    .venue-meta-label {
-      display: block;
-      font-size: 12px;
-      color: #64748b;
-      margin-bottom: 4px;
-    }
-
-    .venue-meta-value {
-      color: #0f172a;
-      font-weight: 700;
-      font-size: 14px;
-      word-break: break-word;
-    }
-
-    .venue-description {
-      margin: 0;
-      color: #334155;
-      line-height: 1.8;
-      font-size: 14px;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 14px;
-      padding: 12px;
-    }
-
-    .venue-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 4px;
-    }
-
-    .pill {
-      display: inline-block;
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .pill-success {
-      background: #dcfce7;
-      color: #166534;
-    }
-
-    .pill-warn {
-      background: #fef3c7;
-      color: #92400e;
-    }
-
-    .pill-danger {
-      background: #fee2e2;
-      color: #991b1b;
-    }
-
-    .pill-neutral {
-      background: #e2e8f0;
-      color: #334155;
-    }
-
-    .empty-state {
-      padding: 18px;
-      text-align: center;
-      color: #64748b;
-      background: #f8fafc;
-      border: 1px dashed #cbd5e1;
-      border-radius: 16px;
-    }
-
-    .muted-note {
-      color: #64748b;
-      font-size: 13px;
-      line-height: 1.8;
-      margin-top: 10px;
-    }
+    .venue-card-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .venue-card-head { display: flex; align-items: start; justify-content: space-between; gap: 12px; }
+    .venue-card-title { margin: 0; font-size: 20px; color: #0f172a; }
+    .venue-card-sub { color: #64748b; font-size: 14px; margin-top: 4px; }
+    .venue-meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; }
+    .venue-meta-item { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 10px 12px; }
+    .venue-meta-label { display: block; font-size: 12px; color: #64748b; margin-bottom: 4px; }
+    .venue-meta-value { color: #0f172a; font-weight: 700; font-size: 14px; word-break: break-word; }
+    .venue-description { margin: 0; color: #334155; line-height: 1.8; font-size: 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 12px; }
+    .venue-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+    .pill { display: inline-block; padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 700; white-space: nowrap; }
+    .pill-success { background: #dcfce7; color: #166534; }
+    .pill-warn { background: #fef3c7; color: #92400e; }
+    .pill-danger { background: #fee2e2; color: #991b1b; }
+    .pill-neutral { background: #e2e8f0; color: #334155; }
+    .empty-state { padding: 18px; text-align: center; color: #64748b; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 16px; }
+    .muted-note { color: #64748b; font-size: 13px; line-height: 1.8; margin-top: 10px; }
 
     @media (max-width: 1100px) {
-      .stats-grid,
-      .venues-grid,
-      .venue-meta-grid,
-      .toolbar {
-        grid-template-columns: 1fr;
-      }
-
-      .page-head h1 {
-        font-size: 34px;
-      }
+      .stats-grid, .venues-grid, .venue-meta-grid, .toolbar { grid-template-columns: 1fr; }
+      .page-head h1 { font-size: 34px; }
     }
   </style>
 </head>
@@ -316,9 +83,7 @@
     <div class="container">
       <div class="page-head">
         <h1>لوحة الأدمن</h1>
-        <p>
-          هذه اللوحة مخصصة لمراجعة الملاعب المضافة من الملاك، وفرزها حسب الحالة والرياضة والبحث فيها بسرعة.
-        </p>
+        <p>هذه اللوحة مخصصة لمراجعة الملاعب المضافة من الملاك، وفرزها حسب الحالة والرياضة والبحث فيها بسرعة.</p>
       </div>
 
       <div id="page-message" class="notice-box"></div>
@@ -356,7 +121,7 @@
             <label for="status-filter">الحالة</label>
             <select id="status-filter">
               <option value="ALL">الكل</option>
-              <option value="PENDING">قيد المراجعة</option>
+              <option value="PENDING_REVIEW">قيد المراجعة</option>
               <option value="APPROVED">معتمدة</option>
               <option value="REJECTED">مرفوضة</option>
             </select>
@@ -384,7 +149,7 @@
         </div>
 
         <p class="muted-note">
-          هذه النسخة تعرض الملاعب وتجهّز مرحلة المراجعة. في الخطوة التالية نربط أزرار الاعتماد والرفض مع endpoint الباكند عندما نضيفه.
+          يمكنك الآن اعتماد أو رفض الملعب مباشرة من هذه الصفحة.
         </p>
       </section>
     </div>
@@ -399,13 +164,13 @@
 
   <script>
     const pageMessage = document.getElementById('page-message');
-
     let allVenues = [];
 
     function showMessage(text, type = 'success') {
       pageMessage.style.display = 'block';
       pageMessage.textContent = text;
       pageMessage.className = 'notice-box ' + (type === 'error' ? 'notice-error' : 'notice-success');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function clearMessage() {
@@ -458,11 +223,13 @@
       };
     }
 
-    function normalizeStatus(status) {
+    function normalizeApprovalStatus(status) {
       const value = String(status || '').toUpperCase();
+
       if (value === 'APPROVED') return { label: 'معتمد', cls: 'pill pill-success' };
-      if (value === 'PENDING') return { label: 'قيد المراجعة', cls: 'pill pill-warn' };
+      if (value === 'PENDING_REVIEW') return { label: 'قيد المراجعة', cls: 'pill pill-warn' };
       if (value === 'REJECTED') return { label: 'مرفوض', cls: 'pill pill-danger' };
+
       return { label: status || 'غير معروف', cls: 'pill pill-neutral' };
     }
 
@@ -471,13 +238,13 @@
 
       document.getElementById('stat-total').textContent = String(venues.length);
       document.getElementById('stat-pending').textContent = String(
-        venues.filter((v) => String(v.status || '').toUpperCase() === 'PENDING').length
+        venues.filter((v) => String(v.approvalStatus || '').toUpperCase() === 'PENDING_REVIEW').length
       );
       document.getElementById('stat-approved').textContent = String(
-        venues.filter((v) => String(v.status || '').toUpperCase() === 'APPROVED').length
+        venues.filter((v) => String(v.approvalStatus || '').toUpperCase() === 'APPROVED').length
       );
       document.getElementById('stat-rejected').textContent = String(
-        venues.filter((v) => String(v.status || '').toUpperCase() === 'REJECTED').length
+        venues.filter((v) => String(v.approvalStatus || '').toUpperCase() === 'REJECTED').length
       );
     }
 
@@ -517,11 +284,18 @@
 
         const matchesSearch = !search || haystack.includes(search);
         const matchesStatus =
-          statusFilter === 'ALL' || String(venue.status || '').toUpperCase() === statusFilter;
+          statusFilter === 'ALL' || String(venue.approvalStatus || '').toUpperCase() === statusFilter;
         const matchesSport =
           sportFilter === 'ALL' || String(venue.sportType || '').toUpperCase() === sportFilter;
 
         return matchesSearch && matchesStatus && matchesSport;
+      });
+    }
+
+    async function updateVenueApprovalStatus(id, approvalStatus) {
+      await httpJson(`/venues/${id}/approval-status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ approvalStatus })
       });
     }
 
@@ -538,7 +312,7 @@
         <div class="venues-grid">
           ${venues.map((venue) => {
             const meta = extractCustomMeta(venue.description || '');
-            const statusInfo = normalizeStatus(venue.status);
+            const statusInfo = normalizeApprovalStatus(venue.approvalStatus);
 
             let cityName =
               venue.city?.nameAr ||
@@ -594,7 +368,7 @@
 
                     <div class="venue-meta-item">
                       <span class="venue-meta-label">السعر بالساعة</span>
-                      <span class="venue-meta-value">${escapeHtml(venue.pricePerHour || venue.defaultHourlyPrice || venue.hourlyPrice || venue.price || '—')}</span>
+                      <span class="venue-meta-value">${escapeHtml(venue.defaultHourlyPrice || venue.pricePerHour || venue.hourlyPrice || venue.price || '—')}</span>
                     </div>
 
                     <div class="venue-meta-item">
@@ -606,8 +380,8 @@
                   <p class="venue-description">${escapeHtml(description || 'لا يوجد وصف مضاف بعد.')}</p>
 
                   <div class="venue-actions">
-                    <button class="btn btn-secondary" type="button" disabled>اعتماد قريبًا</button>
-                    <button class="btn btn-secondary" type="button" disabled>رفض قريبًا</button>
+                    <button class="btn btn-primary" type="button" data-action="approve" data-id="${escapeHtml(venue.id)}">اعتماد</button>
+                    <button class="btn btn-secondary" type="button" data-action="reject" data-id="${escapeHtml(venue.id)}">رفض</button>
                   </div>
                 </div>
               </article>
@@ -656,8 +430,33 @@
       document.getElementById('refresh-btn').addEventListener('click', loadVenues);
     }
 
+    function bindApprovalActions() {
+      document.getElementById('venues-list-wrap').addEventListener('click', async (event) => {
+        const button = event.target.closest('[data-action][data-id]');
+        if (!button) return;
+
+        const id = button.getAttribute('data-id');
+        const action = button.getAttribute('data-action');
+
+        try {
+          button.disabled = true;
+          button.textContent = action === 'approve' ? 'جارِ الاعتماد...' : 'جارِ الرفض...';
+
+          await updateVenueApprovalStatus(id, action === 'approve' ? 'APPROVED' : 'REJECTED');
+
+          showMessage(action === 'approve' ? 'تم اعتماد الملعب بنجاح.' : 'تم رفض الملعب بنجاح.');
+          await loadVenues();
+        } catch (error) {
+          showMessage(error.message || 'تعذر تحديث حالة الملعب.', 'error');
+          button.disabled = false;
+          button.textContent = action === 'approve' ? 'اعتماد' : 'رفض';
+        }
+      });
+    }
+
     async function initPage() {
       bindFilters();
+      bindApprovalActions();
       await loadVenues();
     }
 
