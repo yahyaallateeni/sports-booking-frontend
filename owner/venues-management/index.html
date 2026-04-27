@@ -680,7 +680,7 @@
                     <td>${escapeHtml(venue.sportType || '—')}</td>
                     <td>${escapeHtml(cityName)}</td>
                     <td>${escapeHtml(areaName)}</td>
-                    <td>${escapeHtml(venue.pricePerHour || venue.hourlyPrice || venue.price || '—')}</td>
+                    <td>${escapeHtml(venue.pricePerHour || venue.defaultHourlyPrice || venue.hourlyPrice || venue.price || '—')}</td>
                     <td><span class="${statusClass}">${escapeHtml(statusLabel)}</span></td>
                   </tr>
                 `;
@@ -931,7 +931,7 @@
       const nameAr = document.getElementById('venue-name').value.trim();
       const sportType = document.getElementById('venue-sport').value;
       const capacity = Number(document.getElementById('venue-capacity').value);
-      const pricePerHour = Number(document.getElementById('venue-price').value);
+      const priceValue = document.getElementById('venue-price').value.trim();
       const baseDescription = document.getElementById('venue-description').value.trim();
       const imageUrl = document.getElementById('venue-image').value.trim();
 
@@ -958,7 +958,8 @@
         nameAr,
         sportType,
         capacity,
-        pricePerHour,
+        pricePerHour: Number(priceValue),
+        defaultHourlyPrice: String(priceValue),
         description,
         imageUrl,
         addressLine,
