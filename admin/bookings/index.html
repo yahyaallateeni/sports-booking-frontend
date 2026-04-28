@@ -8,7 +8,7 @@
   <script defer src="/assets/app.js"></script>
 
   <style>
-    .admin-bookings-page { padding: 32px 0 48px; }
+    .admin-bookings-page { padding: 96px 0 48px; }
     .page-head { margin-bottom: 24px; }
     .page-head h1 { margin: 0 0 8px; font-size: 42px; color: #0f172a; }
     .page-head p { margin: 0; color: #475569; line-height: 1.8; }
@@ -63,7 +63,7 @@
 
     .toolbar {
       display: grid;
-      grid-template-columns: 1fr auto;
+      grid-template-columns: 1fr 240px auto;
       gap: 12px;
       align-items: end;
       margin-bottom: 18px;
@@ -81,7 +81,8 @@
       color: #334155;
     }
 
-    .field input {
+    .field input,
+    .field select {
       width: 100%;
       min-height: 48px;
       border: 1px solid #cbd5e1;
@@ -267,6 +268,16 @@
             <input id="search-input" type="text" placeholder="ابحث باسم العميل أو الجوال أو الملعب..." />
           </div>
 
+          <div class="field">
+            <label for="status-filter">الحالة</label>
+            <select id="status-filter">
+              <option value="ALL">الكل</option>
+              <option value="PENDING">قيد الانتظار</option>
+              <option value="CONFIRMED">مؤكدة</option>
+              <option value="CANCELLED">ملغية</option>
+            </select>
+          </div>
+
           <button id="refresh-btn" class="btn btn-secondary" type="button">تحديث</button>
         </div>
 
@@ -377,12 +388,12 @@
 
     function getFilteredBookings() {
       const search = document.getElementById('search-input').value.trim().toLowerCase();
-
-      if (!search) {
-        return allBookings;
-      }
+      const statusFilter = document.getElementById('status-filter').value;
 
       return allBookings.filter((booking) => {
+        const matchesStatus =
+          statusFilter === 'ALL' || String(booking.status || '').toUpperCase() === statusFilter;
+
         const haystack = [
           booking.customerName,
           booking.customerPhone,
@@ -396,7 +407,9 @@
           .join(' ')
           .toLowerCase();
 
-        return haystack.includes(search);
+        const matchesSearch = !search || haystack.includes(search);
+
+        return matchesSearch && matchesStatus;
       });
     }
 
@@ -524,6 +537,10 @@
 
     function bindEvents() {
       document.getElementById('search-input').addEventListener('input', () => {
+        renderBookings(getFilteredBookings());
+      });
+
+      document.getElementById('status-filter').addEventListener('change', () => {
         renderBookings(getFilteredBookings());
       });
 
