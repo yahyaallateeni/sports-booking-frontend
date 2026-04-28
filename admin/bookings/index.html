@@ -23,11 +23,8 @@
       border: 1px solid transparent;
     }
 
-    .notice-error {
-      background: #fee2e2;
-      color: #991b1b;
-      border-color: #fecaca;
-    }
+    .notice-success { background: #dcfce7; color: #166534; border-color: #bbf7d0; }
+    .notice-error { background: #fee2e2; color: #991b1b; border-color: #fecaca; }
 
     .card-box {
       background: #ffffff;
@@ -101,6 +98,13 @@
       font-size: 14px;
     }
 
+    .status-box {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
     .pill {
       display: inline-block;
       padding: 6px 12px;
@@ -108,8 +112,16 @@
       font-size: 13px;
       font-weight: 700;
       white-space: nowrap;
-      background: #fef3c7;
-      color: #92400e;
+    }
+
+    .pill-pending { background: #fef3c7; color: #92400e; }
+    .pill-confirmed { background: #dcfce7; color: #166534; }
+    .pill-cancelled { background: #fee2e2; color: #991b1b; }
+
+    .booking-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     .booking-meta-grid {
@@ -192,7 +204,7 @@
     <div class="container">
       <div class="page-head">
         <h1>الحجوزات</h1>
-        <p>عرض الحجوزات الواردة من العملاء بعد تأكيدها من صفحة الحجز.</p>
+        <p>عرض الحجوزات الواردة من العملاء وإدارة حالتها.</p>
       </div>
 
       <div id="page-message" class="notice-box"></div>
@@ -225,10 +237,12 @@
     const pageMessage = document.getElementById('page-message');
     let allBookings = [];
 
-    function showError(text) {
+    function showMessage(text, type = 'success') {
       pageMessage.style.display = 'block';
       pageMessage.textContent = text;
-      pageMessage.className = 'notice-box notice-error';
+      pageMessage.className = type === 'success'
+        ? 'notice-box notice-success'
+        : 'notice-box notice-error';
     }
 
     function clearMessage() {
@@ -284,11 +298,15 @@
     function normalizeBookingStatus(status) {
       const value = String(status || '').toUpperCase();
 
-      if (value === 'CONFIRMED') return 'مؤكد';
-      if (value === 'CANCELLED') return 'ملغي';
-      if (value === 'PENDING') return 'قيد الانتظار';
+      if (value === 'CONFIRMED') {
+        return { label: 'مؤكد', cls: 'pill pill-confirmed' };
+      }
 
-      return status || '—';
+      if (value === 'CANCELLED') {
+        return { label: 'ملغي', cls: 'pill pill-cancelled' };
+      }
+
+      return { label: 'قيد الانتظار', cls: 'pill pill-pending' };
     }
 
     function getFilteredBookings() {
@@ -329,6 +347,7 @@
         <div class="bookings-grid">
           ${bookings.map((booking) => {
             const venueName = booking.venue?.nameAr || booking.venue?.name || '—';
+            const statusInfo = normalizeBookingStatus(booking.status);
 
             return `
               <article class="booking-card">
@@ -338,7 +357,14 @@
                     <div class="booking-sub">الملعب: ${escapeHtml(venueName)}</div>
                   </div>
 
-                  <span class="pill">${escapeHtml(normalizeBookingStatus(booking.status))}</span>
+                  <div class="status-box">
+                    <span class="${statusInfo.cls}">${escapeHtml(statusInfo.label)}</span>
+
+                    <div class="booking-actions">
+                      <button class="btn btn-primary" type="button" data-action="confirm" data-id="${escapeHtml(booking.id)}">تأكيد</button>
+                      <button class="btn btn-secondary" type="button" data-action="cancel" data-id="${escapeHtml(booking.id)}">إلغاء</button>
+                    </div>
+                  </div>
                 </div>
 
                 <div class="booking-meta-grid">
@@ -405,10 +431,26 @@
       } catch (error) {
         allBookings = [];
         renderBookings([]);
-        showError(error.message || 'تعذر تحميل الحجوزات.');
+        showMessage(error.message || 'تعذر تحميل الحجوزات.', 'error');
       } finally {
         refreshBtn.disabled = false;
         refreshBtn.textContent = 'تحديث';
+      }
+    }
+
+    async function updateBookingStatus(id, status) {
+      try {
+        clearMessage();
+
+        await httpJson(`/bookings/${id}/status`, {
+          method: 'PATCH',
+          body: JSON.stringify({ status })
+        });
+
+        showMessage(status === 'CONFIRMED' ? 'تم تأكيد الحجز بنجاح.' : 'تم إلغاء الحجز بنجاح.');
+        await loadBookings();
+      } catch (error) {
+        showMessage(error.message || 'تعذر تحديث حالة الحجز.', 'error');
       }
     }
 
@@ -418,6 +460,19 @@
       });
 
       document.getElementById('refresh-btn').addEventListener('click', loadBookings);
+
+      document.getElementById('bookings-list-wrap').addEventListener('click', async (event) => {
+        const button = event.target.closest('[data-action][data-id]');
+        if (!button) return;
+
+        const id = button.getAttribute('data-id');
+        const action = button.getAttribute('data-action');
+
+        button.disabled = true;
+        button.textContent = action === 'confirm' ? 'جارِ التأكيد...' : 'جارِ الإلغاء...';
+
+        await updateBookingStatus(id, action === 'confirm' ? 'CONFIRMED' : 'CANCELLED');
+      });
     }
 
     async function initPage() {
