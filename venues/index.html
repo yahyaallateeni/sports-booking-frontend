@@ -1,3 +1,4 @@
+cat > /var/www/sports-booking-web/venues/index.html <<'EOF'
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
@@ -6,6 +7,7 @@
   <title>الملاعب</title>
   <link rel="stylesheet" href="/assets/styles.css" />
   <script defer src="/assets/app.js"></script>
+
   <style>
     .venues-page {
       padding: 32px 0 48px;
@@ -44,7 +46,7 @@
     }
 
     .filters-box {
-      background: #fff;
+      background: #ffffff;
       border: 1px solid #e2e8f0;
       border-radius: 22px;
       padding: 22px;
@@ -78,7 +80,7 @@
       border-radius: 14px;
       padding: 12px 14px;
       font: inherit;
-      background: #fff;
+      background: #ffffff;
       color: #0f172a;
       outline: none;
       box-sizing: border-box;
@@ -91,7 +93,7 @@
     }
 
     .venue-card {
-      background: #fff;
+      background: #ffffff;
       border: 1px solid #e2e8f0;
       border-radius: 22px;
       overflow: hidden;
@@ -100,24 +102,26 @@
       min-height: 100%;
     }
 
-    .venue-card-image {
-      width: 100%;
-      height: 210px;
-      object-fit: cover;
-      background: #f8fafc;
-      border-bottom: 1px solid #e2e8f0;
-    }
-
+    .venue-card-image,
     .venue-card-placeholder {
       width: 100%;
       height: 210px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .venue-card-image {
+      object-fit: cover;
+      background: #f8fafc;
+      display: block;
+    }
+
+    .venue-card-placeholder {
       display: flex;
       align-items: center;
       justify-content: center;
       background: linear-gradient(135deg, #eff6ff, #f8fafc);
       color: #475569;
       font-weight: 700;
-      border-bottom: 1px solid #e2e8f0;
     }
 
     .venue-card-body {
@@ -125,11 +129,12 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
+      flex: 1;
     }
 
     .venue-card-head {
       display: flex;
-      align-items: start;
+      align-items: flex-start;
       justify-content: space-between;
       gap: 10px;
     }
@@ -200,14 +205,14 @@
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
-      margin-top: 4px;
+      margin-top: auto;
     }
 
     .empty-state {
       padding: 24px;
       text-align: center;
       color: #64748b;
-      background: #fff;
+      background: #ffffff;
       border: 1px dashed #cbd5e1;
       border-radius: 18px;
     }
@@ -235,6 +240,7 @@
     }
   </style>
 </head>
+
 <body>
   <header class="topbar">
     <div class="container nav">
@@ -335,7 +341,7 @@
         ...options
       });
 
-      const data = await response.json().catch(() => ([]));
+      const data = await response.json().catch(() => []);
 
       if (!response.ok) {
         const message = data?.message || data?.error || 'حدث خطأ أثناء الاتصال بالخادم';
@@ -361,18 +367,59 @@
 
       return {
         customCity: cityMatch ? cityMatch[1].trim() : '',
-        customArea: areaMatch ? areaMatch[1].trim() : '',
+        customArea: areaMatch ? areaMatch[1].trim() : ''
       };
+    }
+
+    function cleanDescription(text) {
+      return String(text || '')
+        .replace(/\[CUSTOM_CITY\]:(.*?)(\n|$)/g, '')
+        .replace(/\[CUSTOM_AREA\]:(.*?)(\n|$)/g, '')
+        .trim();
     }
 
     function normalizeSportLabel(sportType) {
       const value = String(sportType || '').toUpperCase();
+
       if (value === 'FOOTBALL') return 'كرة قدم';
       if (value === 'PADEL') return 'بادل';
       if (value === 'TENNIS') return 'تنس';
       if (value === 'BASKETBALL') return 'كرة سلة';
       if (value === 'VOLLEYBALL') return 'كرة طائرة';
+
       return sportType || '—';
+    }
+
+    function getVenueCityName(venue) {
+      const meta = extractCustomMeta(venue.description || '');
+
+      const cityName =
+        venue.city?.nameAr ||
+        venue.cityNameAr ||
+        venue.cityName ||
+        '—';
+
+      if (cityName === 'أخرى' && meta.customCity) {
+        return meta.customCity;
+      }
+
+      return cityName;
+    }
+
+    function getVenueAreaName(venue) {
+      const meta = extractCustomMeta(venue.description || '');
+
+      const areaName =
+        venue.area?.nameAr ||
+        venue.areaNameAr ||
+        venue.areaName ||
+        '—';
+
+      if (areaName === 'أخرى' && meta.customArea) {
+        return meta.customArea;
+      }
+
+      return areaName;
     }
 
     function fillCityFilter(list) {
@@ -380,27 +427,18 @@
       const currentValue = cityFilter.value || 'ALL';
 
       const uniqueCities = [...new Set(
-        list.map((venue) => {
-          const meta = extractCustomMeta(venue.description || '');
-          return (
-            meta.customCity ||
-            venue.city?.nameAr ||
-            venue.cityNameAr ||
-            venue.cityName ||
-            ''
-          ).trim();
-        }).filter(Boolean)
+        list
+          .map((venue) => getVenueCityName(venue))
+          .filter((city) => city && city !== '—')
       )].sort((a, b) => a.localeCompare(b, 'ar'));
 
       cityFilter.innerHTML =
         '<option value="ALL">الكل</option>' +
-        uniqueCities.map((city) => `<option value="${escapeHtml(city)}">${escapeHtml(city)}</option>`).join('');
+        uniqueCities
+          .map((city) => `<option value="${escapeHtml(city)}">${escapeHtml(city)}</option>`)
+          .join('');
 
-      if (uniqueCities.includes(currentValue)) {
-        cityFilter.value = currentValue;
-      } else {
-        cityFilter.value = 'ALL';
-      }
+      cityFilter.value = uniqueCities.includes(currentValue) ? currentValue : 'ALL';
     }
 
     function getFilteredVenues() {
@@ -409,21 +447,8 @@
       const cityFilter = document.getElementById('city-filter').value;
 
       return approvedVenues.filter((venue) => {
-        const meta = extractCustomMeta(venue.description || '');
-
-        const cityName =
-          meta.customCity ||
-          venue.city?.nameAr ||
-          venue.cityNameAr ||
-          venue.cityName ||
-          '';
-
-        const areaName =
-          meta.customArea ||
-          venue.area?.nameAr ||
-          venue.areaNameAr ||
-          venue.areaName ||
-          '';
+        const cityName = getVenueCityName(venue);
+        const areaName = getVenueAreaName(venue);
 
         const haystack = [
           venue.nameAr,
@@ -431,17 +456,15 @@
           venue.sportType,
           cityName,
           areaName,
-          venue.description,
+          cleanDescription(venue.description)
         ]
           .filter(Boolean)
           .join(' ')
           .toLowerCase();
 
         const matchesSearch = !search || haystack.includes(search);
-        const matchesSport =
-          sportFilter === 'ALL' || String(venue.sportType || '').toUpperCase() === sportFilter;
-        const matchesCity =
-          cityFilter === 'ALL' || cityName === cityFilter;
+        const matchesSport = sportFilter === 'ALL' || String(venue.sportType || '').toUpperCase() === sportFilter;
+        const matchesCity = cityFilter === 'ALL' || cityName === cityFilter;
 
         return matchesSearch && matchesSport && matchesCity;
       });
@@ -459,46 +482,32 @@
       wrap.innerHTML = `
         <div class="venues-grid">
           ${venues.map((venue) => {
-            const meta = extractCustomMeta(venue.description || '');
-
-            let cityName =
-              venue.city?.nameAr ||
-              venue.cityNameAr ||
-              venue.cityName ||
-              '—';
-
-            let areaName =
-              venue.area?.nameAr ||
-              venue.areaNameAr ||
-              venue.areaName ||
-              '—';
-
-            if (cityName === 'أخرى' && meta.customCity) {
-              cityName = meta.customCity;
-            }
-
-            if (areaName === 'أخرى' && meta.customArea) {
-              areaName = meta.customArea;
-            }
-
-            const description = String(venue.description || '')
-              .replace(/\[CUSTOM_CITY\]:(.*?)(\n|$)/g, '')
-              .replace(/\[CUSTOM_AREA\]:(.*?)(\n|$)/g, '')
-              .trim();
+            const cityName = getVenueCityName(venue);
+            const areaName = getVenueAreaName(venue);
+            const description = cleanDescription(venue.description);
 
             const imageBlock = venue.imageUrl
               ? `<img class="venue-card-image" src="${escapeHtml(venue.imageUrl)}" alt="${escapeHtml(venue.nameAr || venue.name || 'ملعب')}" />`
-              : `<div class="venue-card-placeholder">لا توجد صورة</div>`;
+              : '<div class="venue-card-placeholder">لا توجد صورة</div>';
+
+            const price =
+              venue.defaultHourlyPrice ||
+              venue.pricePerHour ||
+              venue.hourlyPrice ||
+              venue.price ||
+              '—';
 
             return `
               <article class="venue-card">
                 ${imageBlock}
+
                 <div class="venue-card-body">
                   <div class="venue-card-head">
                     <div>
                       <h3 class="venue-card-title">${escapeHtml(venue.nameAr || venue.name || '—')}</h3>
                       <div class="venue-card-sub">${escapeHtml(normalizeSportLabel(venue.sportType))}</div>
                     </div>
+
                     <span class="pill">معتمد</span>
                   </div>
 
@@ -515,7 +524,7 @@
 
                     <div class="venue-meta-item">
                       <span class="venue-meta-label">السعر بالساعة</span>
-                      <span class="venue-meta-value">${escapeHtml(venue.defaultHourlyPrice || venue.pricePerHour || venue.hourlyPrice || venue.price || '—')}</span>
+                      <span class="venue-meta-value">${escapeHtml(price)}</span>
                     </div>
 
                     <div class="venue-meta-item">
@@ -542,15 +551,16 @@
 
       try {
         clearMessage();
+
         refreshBtn.disabled = true;
         refreshBtn.textContent = 'جارِ التحديث...';
 
         const data = await httpJson('/venues', { method: 'GET' });
         const allVenues = Array.isArray(data) ? data : [];
 
-        approvedVenues = allVenues.filter(
-          (venue) => String(venue.approvalStatus || '').toUpperCase() === 'APPROVED'
-        );
+        approvedVenues = allVenues.filter((venue) => {
+          return String(venue.approvalStatus || '').toUpperCase() === 'APPROVED';
+        });
 
         fillCityFilter(approvedVenues);
         renderVenues(getFilteredVenues());
@@ -589,3 +599,4 @@
   </script>
 </body>
 </html>
+EOF
