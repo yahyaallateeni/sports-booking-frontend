@@ -1,3 +1,574 @@
-<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>الحجز</title><link rel="stylesheet" href="/assets/styles.css"><script defer src="/assets/app.js"></script></head><body><header class="topbar"><div class="container nav"><a class="brand" href="/">ملاعب</a><nav class="nav-links"><a class="nav-link" href="/">الرئيسية</a><a class="nav-link" href="/venues/">الملاعب</a><a class="nav-link" href="/booking/">الحجز</a><a class="nav-link" href="/profile/">حسابي</a><a class="nav-link" href="/owner/">لوحة المالك</a><a class="nav-link" href="/admin/">لوحة الأدمن</a></nav><div class="nav-actions"><a class="btn btn-secondary" href="/login/">الدخول</a><a class="btn btn-primary" href="/register/">إنشاء حساب</a></div></div></header>
-<section class="section"><div class="container details"><div class="card card-body"><h1 class="page-title">احجز ملعبك</h1><p class="page-sub">اختر الرياضة والموعد والمدة والخدمات الإضافية، وشاهد السعر يتحدث مباشرة قبل الانتقال إلى الدفع.</p><form id="booking-form"><div class="form-grid"><div class="field"><label>الرياضة</label><select id="field-sport"><option>كرة القدم</option><option>بادل</option><option>كرة السلة</option></select></div><div class="field"><label>التاريخ</label><input id="field-date" type="date" value="2026-04-25"></div><div class="field"><label>المدة</label><select id="field-duration"><option value="30">30 دقيقة</option><option selected value="60">60 دقيقة</option><option value="90">90 دقيقة</option><option value="120">120 دقيقة</option></select></div><div class="field"><label>عدد اللاعبين</label><input id="field-players" type="number" min="2" value="10"></div></div><div style="margin:20px 0"><label style="font-weight:800;display:block;margin-bottom:10px">اختر الوقت</label><div class="slot-grid"><button type="button" class="slot active" data-available="true" data-time="04:00 م">04:00 م</button><button type="button" class="slot status-busy" data-available="false" data-time="05:00 م">05:00 م</button><button type="button" class="slot status-warn" data-available="false" data-time="06:00 م">06:00 م</button><button type="button" class="slot" data-available="true" data-time="07:00 م">07:00 م</button><button type="button" class="slot status-closed" data-available="false" data-time="08:00 م">08:00 م</button><button type="button" class="slot" data-available="true" data-time="09:00 م">09:00 م</button></div></div><div class="form-grid"><label class="notice"><input id="field-referee" type="checkbox" checked> إضافة حكم</label><label class="notice"><input id="field-kits" type="checkbox"> إضافة أطقم تدريب</label></div><div class="toolbar" style="margin-top:16px"><button class="btn btn-primary" type="submit">المتابعة إلى الدفع</button><a class="btn btn-secondary" href="/venues/1/">العودة لتفاصيل الملعب</a></div></form></div><aside class="summary-box"><div class="card card-body"><h3 style="margin-top:0">ملخص الحجز</h3><table class="table"><tr><td>السعر الكلي</td><td id="live-total">270 ر.س</td></tr><tr><td>العربون</td><td id="live-deposit">81 ر.س</td></tr><tr><td>المتبقي</td><td id="live-remaining">189 ر.س</td></tr></table><div class="notice">يتغير السعر هنا مباشرة حسب المدة والحكم والأطقم.</div></div></aside></div></section>
-<footer class="footer"><div class="container footer-inner"><div>© 2026 ملاعب. منصة حجز ملاعب رياضية.</div><div>واجهة عربية وتجربة حجز واضحة وسريعة.</div></div></footer></body></html>
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>الحجز</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <script defer src="/assets/app.js"></script>
+  <style>
+    .booking-page {
+      padding: 32px 0 48px;
+    }
+
+    .page-head {
+      margin-bottom: 24px;
+    }
+
+    .page-head h1 {
+      margin: 0 0 8px;
+      font-size: 42px;
+      color: #0f172a;
+    }
+
+    .page-head p {
+      margin: 0;
+      color: #475569;
+      line-height: 1.8;
+    }
+
+    .notice-box {
+      display: none;
+      padding: 14px 16px;
+      border-radius: 14px;
+      margin-bottom: 18px;
+      font-size: 14px;
+      line-height: 1.7;
+      border: 1px solid transparent;
+    }
+
+    .notice-success {
+      background: #dcfce7;
+      color: #166534;
+      border-color: #bbf7d0;
+    }
+
+    .notice-error {
+      background: #fee2e2;
+      color: #991b1b;
+      border-color: #fecaca;
+    }
+
+    .booking-layout {
+      display: grid;
+      grid-template-columns: 1.05fr 1.3fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .card-box {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 22px;
+      padding: 22px;
+    }
+
+    .venue-cover {
+      width: 100%;
+      height: 230px;
+      object-fit: cover;
+      border-radius: 18px;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+    }
+
+    .venue-cover-placeholder {
+      width: 100%;
+      height: 230px;
+      border-radius: 18px;
+      border: 1px solid #e2e8f0;
+      background: linear-gradient(135deg, #eff6ff, #f8fafc);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #475569;
+      font-weight: 700;
+    }
+
+    .venue-title {
+      margin: 16px 0 6px;
+      font-size: 28px;
+      color: #0f172a;
+    }
+
+    .venue-sub {
+      color: #64748b;
+      font-size: 15px;
+      margin-bottom: 14px;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 12px;
+      margin-top: 16px;
+    }
+
+    .meta-item {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 10px 12px;
+    }
+
+    .meta-label {
+      display: block;
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 4px;
+    }
+
+    .meta-value {
+      color: #0f172a;
+      font-weight: 700;
+      font-size: 14px;
+      word-break: break-word;
+    }
+
+    .venue-description {
+      margin: 16px 0 0;
+      color: #334155;
+      line-height: 1.9;
+      font-size: 14px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 12px;
+      min-height: 90px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field label {
+      font-size: 14px;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font: inherit;
+      background: #fff;
+      color: #0f172a;
+      outline: none;
+      box-sizing: border-box;
+    }
+
+    .field textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .field-full {
+      grid-column: 1 / -1;
+    }
+
+    .summary-box {
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      color: #334155;
+      line-height: 1.8;
+    }
+
+    .summary-box strong {
+      color: #0f172a;
+    }
+
+    .empty-state {
+      padding: 24px;
+      text-align: center;
+      color: #64748b;
+      background: #fff;
+      border: 1px dashed #cbd5e1;
+      border-radius: 18px;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    @media (max-width: 980px) {
+      .booking-layout,
+      .form-grid,
+      .meta-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .page-head h1 {
+        font-size: 34px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container nav">
+      <a class="brand" href="/">ملاعب</a>
+
+      <nav class="nav-links">
+        <a class="nav-link" href="/">الرئيسية</a>
+        <a class="nav-link" href="/venues/">الملاعب</a>
+        <a class="nav-link active" href="/booking/">الحجز</a>
+        <a class="nav-link" href="/profile/">حسابي</a>
+        <a class="nav-link" href="/owner/">لوحة المالك</a>
+        <a class="nav-link" href="/admin/">لوحة الأدمن</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a class="btn btn-secondary" href="/login/">الدخول</a>
+        <a class="btn btn-primary" href="/register/">إنشاء حساب</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="booking-page">
+    <div class="container">
+      <div class="page-head">
+        <h1>الحجز</h1>
+        <p>اختر موعدك وأكمل بيانات الحجز للملعب الذي حددته.</p>
+      </div>
+
+      <div id="page-message" class="notice-box"></div>
+
+      <div id="booking-content" class="booking-layout" style="display:none;">
+        <section class="card-box">
+          <div id="venue-image-wrap">
+            <div class="venue-cover-placeholder">لا توجد صورة</div>
+          </div>
+
+          <h2 id="venue-title" class="venue-title">—</h2>
+          <div id="venue-sub" class="venue-sub">—</div>
+
+          <div class="meta-grid">
+            <div class="meta-item">
+              <span class="meta-label">المدينة</span>
+              <span id="venue-city" class="meta-value">—</span>
+            </div>
+
+            <div class="meta-item">
+              <span class="meta-label">الحي</span>
+              <span id="venue-area" class="meta-value">—</span>
+            </div>
+
+            <div class="meta-item">
+              <span class="meta-label">السعر بالساعة</span>
+              <span id="venue-price" class="meta-value">—</span>
+            </div>
+
+            <div class="meta-item">
+              <span class="meta-label">الرياضة</span>
+              <span id="venue-sport" class="meta-value">—</span>
+            </div>
+          </div>
+
+          <p id="venue-description" class="venue-description">—</p>
+        </section>
+
+        <section class="card-box">
+          <h3 style="margin-top:0;">بيانات الحجز</h3>
+
+          <form id="booking-form" style="margin-top:16px;">
+            <div class="form-grid">
+              <div class="field">
+                <label for="booking-name">الاسم</label>
+                <input id="booking-name" type="text" placeholder="اسمك الكامل" required />
+              </div>
+
+              <div class="field">
+                <label for="booking-phone">رقم الجوال</label>
+                <input id="booking-phone" type="tel" placeholder="05xxxxxxxx" required />
+              </div>
+
+              <div class="field">
+                <label for="booking-date">التاريخ</label>
+                <input id="booking-date" type="date" required />
+              </div>
+
+              <div class="field">
+                <label for="booking-time">الوقت</label>
+                <input id="booking-time" type="time" required />
+              </div>
+
+              <div class="field">
+                <label for="booking-hours">عدد الساعات</label>
+                <select id="booking-hours" required>
+                  <option value="1">1 ساعة</option>
+                  <option value="2">2 ساعتان</option>
+                  <option value="3">3 ساعات</option>
+                  <option value="4">4 ساعات</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="booking-players">عدد اللاعبين</label>
+                <input id="booking-players" type="number" min="1" placeholder="10" />
+              </div>
+
+              <div class="field field-full">
+                <label for="booking-notes">ملاحظات</label>
+                <textarea id="booking-notes" placeholder="أي ملاحظات إضافية للحجز..."></textarea>
+              </div>
+            </div>
+
+            <div id="booking-summary" class="summary-box">
+              <strong>ملخص الحجز:</strong>
+              <div id="booking-summary-text" style="margin-top:8px;">اختر عدد الساعات لعرض السعر التقديري.</div>
+            </div>
+
+            <div class="toolbar-actions">
+              <button id="submit-booking-btn" class="btn btn-primary" type="submit">تأكيد الحجز</button>
+              <a class="btn btn-secondary" href="/venues/">العودة للملاعب</a>
+            </div>
+          </form>
+        </section>
+      </div>
+
+      <div id="booking-empty" class="empty-state">
+        جارِ تحميل بيانات الملعب...
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div>© 2026 ملاعب. منصة حجز ملاعب رياضية.</div>
+      <div>اختر ملعبك ثم أرسل طلب الحجز بخطوات بسيطة.</div>
+    </div>
+  </footer>
+
+  <script>
+    const pageMessage = document.getElementById('page-message');
+    let currentVenue = null;
+
+    function showMessage(text, type = 'success') {
+      pageMessage.style.display = 'block';
+      pageMessage.textContent = text;
+      pageMessage.className = 'notice-box ' + (type === 'error' ? 'notice-error' : 'notice-success');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function clearMessage() {
+      pageMessage.style.display = 'none';
+      pageMessage.textContent = '';
+      pageMessage.className = 'notice-box';
+    }
+
+    async function httpJson(path, options = {}) {
+      const response = await fetch(`/api/v1${path}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(options.headers || {})
+        },
+        ...options
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        const message = data?.message || data?.error || 'حدث خطأ أثناء الاتصال بالخادم';
+        throw new Error(Array.isArray(message) ? message.join(', ') : message);
+      }
+
+      return data;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function extractCustomMeta(text) {
+      const source = String(text || '');
+      const cityMatch = source.match(/\[CUSTOM_CITY\]:(.*?)(\n|$)/);
+      const areaMatch = source.match(/\[CUSTOM_AREA\]:(.*?)(\n|$)/);
+
+      return {
+        customCity: cityMatch ? cityMatch[1].trim() : '',
+        customArea: areaMatch ? areaMatch[1].trim() : '',
+      };
+    }
+
+    function normalizeSportLabel(sportType) {
+      const value = String(sportType || '').toUpperCase();
+      if (value === 'FOOTBALL') return 'كرة قدم';
+      if (value === 'PADEL') return 'بادل';
+      if (value === 'TENNIS') return 'تنس';
+      if (value === 'BASKETBALL') return 'كرة سلة';
+      if (value === 'VOLLEYBALL') return 'كرة طائرة';
+      return sportType || '—';
+    }
+
+    function getVenueIdFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('venueId') || '';
+    }
+
+    function renderVenueInfo(venue) {
+      const meta = extractCustomMeta(venue.description || '');
+
+      let cityName =
+        venue.city?.nameAr ||
+        venue.cityNameAr ||
+        venue.cityName ||
+        '—';
+
+      let areaName =
+        venue.area?.nameAr ||
+        venue.areaNameAr ||
+        venue.areaName ||
+        '—';
+
+      if (cityName === 'أخرى' && meta.customCity) {
+        cityName = meta.customCity;
+      }
+
+      if (areaName === 'أخرى' && meta.customArea) {
+        areaName = meta.customArea;
+      }
+
+      const description = String(venue.description || '')
+        .replace(/\[CUSTOM_CITY\]:(.*?)(\n|$)/g, '')
+        .replace(/\[CUSTOM_AREA\]:(.*?)(\n|$)/g, '')
+        .trim();
+
+      const imageWrap = document.getElementById('venue-image-wrap');
+      if (venue.imageUrl) {
+        imageWrap.innerHTML = `<img class="venue-cover" src="${escapeHtml(venue.imageUrl)}" alt="${escapeHtml(venue.nameAr || venue.name || 'ملعب')}" />`;
+      } else {
+        imageWrap.innerHTML = '<div class="venue-cover-placeholder">لا توجد صورة</div>';
+      }
+
+      document.getElementById('venue-title').textContent = venue.nameAr || venue.name || '—';
+      document.getElementById('venue-sub').textContent = normalizeSportLabel(venue.sportType);
+      document.getElementById('venue-city').textContent = cityName;
+      document.getElementById('venue-area').textContent = areaName;
+      document.getElementById('venue-price').textContent =
+        venue.defaultHourlyPrice || venue.pricePerHour || venue.hourlyPrice || venue.price || '—';
+      document.getElementById('venue-sport').textContent = normalizeSportLabel(venue.sportType);
+      document.getElementById('venue-description').textContent = description || 'لا يوجد وصف مضاف بعد.';
+    }
+
+    function updateBookingSummary() {
+      if (!currentVenue) return;
+
+      const hours = Number(document.getElementById('booking-hours').value || 1);
+      const pricePerHour = Number(
+        currentVenue.defaultHourlyPrice ||
+        currentVenue.pricePerHour ||
+        currentVenue.hourlyPrice ||
+        currentVenue.price ||
+        0
+      );
+
+      const total = hours * pricePerHour;
+
+      document.getElementById('booking-summary-text').innerHTML = `
+        الملعب: <strong>${escapeHtml(currentVenue.nameAr || currentVenue.name || '—')}</strong><br>
+        عدد الساعات: <strong>${hours}</strong><br>
+        السعر التقديري: <strong>${total}</strong>
+      `;
+    }
+
+    async function loadVenue() {
+      const venueId = getVenueIdFromUrl();
+      const emptyBox = document.getElementById('booking-empty');
+      const content = document.getElementById('booking-content');
+
+      if (!venueId) {
+        emptyBox.innerHTML = 'لم يتم تحديد ملعب للحجز. عد إلى صفحة الملاعب واختر ملعبًا أولًا.';
+        return;
+      }
+
+      try {
+        clearMessage();
+
+        const venue = await httpJson(`/venues/${venueId}`, { method: 'GET' });
+
+        if (String(venue.approvalStatus || '').toUpperCase() !== 'APPROVED') {
+          throw new Error('هذا الملعب غير متاح للحجز العام حاليًا.');
+        }
+
+        currentVenue = venue;
+        renderVenueInfo(venue);
+        updateBookingSummary();
+
+        emptyBox.style.display = 'none';
+        content.style.display = 'grid';
+      } catch (error) {
+        emptyBox.innerHTML = escapeHtml(error.message || 'تعذر تحميل بيانات الملعب.');
+        content.style.display = 'none';
+      }
+    }
+
+    function bindBookingForm() {
+      document.getElementById('booking-hours').addEventListener('change', updateBookingSummary);
+
+      document.getElementById('booking-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        if (!currentVenue) {
+          showMessage('تعذر إكمال الحجز لعدم توفر بيانات الملعب.', 'error');
+          return;
+        }
+
+        const name = document.getElementById('booking-name').value.trim();
+        const phone = document.getElementById('booking-phone').value.trim();
+        const date = document.getElementById('booking-date').value;
+        const time = document.getElementById('booking-time').value;
+        const hours = document.getElementById('booking-hours').value;
+        const players = document.getElementById('booking-players').value;
+        const notes = document.getElementById('booking-notes').value.trim();
+
+        showMessage(
+          `تم استلام طلب الحجز مبدئيًا لملعب "${currentVenue.nameAr || currentVenue.name}". التاريخ: ${date}، الوقت: ${time}، المدة: ${hours} ساعة.`,
+          'success'
+        );
+
+        console.log('Booking draft payload:', {
+          venueId: currentVenue.id,
+          customerName: name,
+          customerPhone: phone,
+          bookingDate: date,
+          bookingTime: time,
+          durationHours: hours,
+          playersCount: players,
+          notes
+        });
+      });
+    }
+
+    async function initPage() {
+      bindBookingForm();
+      await loadVenue();
+    }
+
+    initPage();
+  </script>
+</body>
+</html>
