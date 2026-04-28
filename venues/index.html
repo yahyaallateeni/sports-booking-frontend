@@ -526,7 +526,7 @@
                   <p class="venue-description">${escapeHtml(description || 'لا يوجد وصف مضاف بعد.')}</p>
 
                   <div class="venue-actions">
-                    <a class="btn btn-primary" href="/booking/">احجز الآن</a>
+                    <a class="btn btn-primary" href="/booking/?venueId=${encodeURIComponent(venue.id)}">احجز الآن</a>
                   </div>
                 </div>
               </article>
