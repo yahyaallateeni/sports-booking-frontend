@@ -1,4 +1,3 @@
-cat > /var/www/sports-booking-web/admin/bookings/index.html <<'EOF'
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
@@ -9,25 +8,10 @@ cat > /var/www/sports-booking-web/admin/bookings/index.html <<'EOF'
   <script defer src="/assets/app.js"></script>
 
   <style>
-    .admin-bookings-page {
-      padding: 32px 0 48px;
-    }
-
-    .page-head {
-      margin-bottom: 24px;
-    }
-
-    .page-head h1 {
-      margin: 0 0 8px;
-      font-size: 42px;
-      color: #0f172a;
-    }
-
-    .page-head p {
-      margin: 0;
-      color: #475569;
-      line-height: 1.8;
-    }
+    .admin-bookings-page { padding: 32px 0 48px; }
+    .page-head { margin-bottom: 24px; }
+    .page-head h1 { margin: 0 0 8px; font-size: 42px; color: #0f172a; }
+    .page-head p { margin: 0; color: #475569; line-height: 1.8; }
 
     .notice-box {
       display: none;
@@ -322,7 +306,7 @@ cat > /var/www/sports-booking-web/admin/bookings/index.html <<'EOF'
           booking.status,
           booking.venue?.nameAr,
           booking.venue?.name,
-          booking.venue?.addressLine,
+          booking.venue?.addressLine
         ]
           .filter(Boolean)
           .join(' ')
@@ -445,4 +429,3 @@ cat > /var/www/sports-booking-web/admin/bookings/index.html <<'EOF'
   </script>
 </body>
 </html>
-EOF
