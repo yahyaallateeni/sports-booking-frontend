@@ -1,3 +1,590 @@
-<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>الملاعب</title><link rel="stylesheet" href="/assets/styles.css"><script defer src="/assets/app.js"></script></head><body><header class="topbar"><div class="container nav"><a class="brand" href="/">ملاعب</a><nav class="nav-links"><a class="nav-link" href="/">الرئيسية</a><a class="nav-link" href="/venues/">الملاعب</a><a class="nav-link" href="/booking/">الحجز</a><a class="nav-link" href="/profile/">حسابي</a><a class="nav-link" href="/owner/">لوحة المالك</a><a class="nav-link" href="/admin/">لوحة الأدمن</a></nav><div class="nav-actions"><a class="btn btn-secondary" href="/login/">الدخول</a><a class="btn btn-primary" href="/register/">إنشاء حساب</a></div></div></header>
-<section class="section"><div class="container"><div class="section-head"><div><h1 class="page-title">استكشف الملاعب</h1><p class="page-sub">صفّ الملاعب حسب الرياضة والمدينة والسعر وحالة التوفر.</p></div></div><div class="layout"><aside class="sidebar"><div class="card card-body"><h3 style="margin-top:0">الفلاتر</h3><div class="list"><div class="field"><label>الرياضة</label><select id="filter-sport"><option value="all">الكل</option><option value="football">كرة القدم</option><option value="padel">بادل</option><option value="volley">كرة الطائرة</option><option value="basketball">كرة السلة</option></select></div><div class="field"><label>المدينة</label><select id="filter-city"><option value="all">الكل</option><option value="riyadh">الرياض</option><option value="jeddah">جدة</option><option value="dammam">الدمام</option></select></div><div class="field"><label>التوفر</label><select id="filter-availability"><option value="all">الكل</option><option value="yes">متاح اليوم</option><option value="no">ممتلئ اليوم</option></select></div><div class="field"><label>أقصى سعر</label><select id="filter-price"><option value="9999">أي سعر</option><option value="160">160 ر.س</option><option value="190">190 ر.س</option><option value="220">220 ر.س</option></select></div></div></div></aside><div class="list"><article class="card" data-venue-card data-sport="football" data-city="riyadh" data-available="yes" data-price="220"><div class="venue-cover"><img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1200&auto=format&fit=crop" alt="ملعب النخبة الرياضي"><div class="overlay"><span class="badge">كرة القدم</span><span class="badge">220 ر.س</span></div><div class="overlay-bottom"><span>⭐ 4.8</span><span>الرياض، الياسمين</span></div></div><div class="card-body"><h3 style="margin:0 0 10px">ملعب النخبة الرياضي</h3><p class="page-sub" style="margin-top:0">ملعب مجهز للمباريات والتدريب مع مرافق مساندة وإضاءة ليلية.</p><div class="chips"><span class="chip">مواقف</span><span class="chip">غرف تبديل</span><span class="chip">إضاءة</span></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;gap:12px;flex-wrap:wrap"><span class="pill pill-green">متاح اليوم</span><div class="toolbar"><a class="btn btn-secondary" href="/venues/1/">التفاصيل</a><a class="btn btn-primary" href="/booking/">احجز الآن</a></div></div></div></article><article class="card" data-venue-card data-sport="padel" data-city="riyadh" data-available="yes" data-price="160"><div class="venue-cover"><img src="https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?q=80&w=1200&auto=format&fit=crop" alt="بادل أرينا"><div class="overlay"><span class="badge">بادل</span><span class="badge">160 ر.س</span></div><div class="overlay-bottom"><span>⭐ 4.9</span><span>الرياض، حطين</span></div></div><div class="card-body"><h3 style="margin:0 0 10px">بادل أرينا</h3><p class="page-sub" style="margin-top:0">ملاعب بادل حديثة داخلية بتجهيزات مميزة ومواقف مريحة.</p><div class="chips"><span class="chip">مواقف</span><span class="chip">غرف تبديل</span><span class="chip">إضاءة</span></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;gap:12px;flex-wrap:wrap"><span class="pill pill-green">متاح اليوم</span><div class="toolbar"><a class="btn btn-secondary" href="/venues/2/">التفاصيل</a><a class="btn btn-primary" href="/booking/">احجز الآن</a></div></div></div></article><article class="card" data-venue-card data-sport="volley" data-city="jeddah" data-available="no" data-price="180"><div class="venue-cover"><img src="https://images.unsplash.com/photo-1547347298-4074fc3086f0?q=80&w=1200&auto=format&fit=crop" alt="فولي برو بيتش"><div class="overlay"><span class="badge">كرة الطائرة</span><span class="badge">180 ر.س</span></div><div class="overlay-bottom"><span>⭐ 4.6</span><span>جدة، أبحر</span></div></div><div class="card-body"><h3 style="margin:0 0 10px">فولي برو بيتش</h3><p class="page-sub" style="margin-top:0">تجربة شاطئية رائعة للفعاليات الودية والبطولات الصغيرة.</p><div class="chips"><span class="chip">مواقف</span><span class="chip">غرف تبديل</span><span class="chip">إضاءة</span></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;gap:12px;flex-wrap:wrap"><span class="pill pill-red">ممتلئ اليوم</span><div class="toolbar"><a class="btn btn-secondary" href="/venues/3/">التفاصيل</a><a class="btn btn-primary" href="/booking/">احجز الآن</a></div></div></div></article><article class="card" data-venue-card data-sport="basketball" data-city="dammam" data-available="yes" data-price="190"><div class="venue-cover"><img src="https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=1200&auto=format&fit=crop" alt="هوبز هول"><div class="overlay"><span class="badge">كرة السلة</span><span class="badge">190 ر.س</span></div><div class="overlay-bottom"><span>⭐ 4.7</span><span>الدمام، الشاطئ</span></div></div><div class="card-body"><h3 style="margin:0 0 10px">هوبز هول</h3><p class="page-sub" style="margin-top:0">ملعب سلة داخلي مع لوحة نتائج ومدرجات وإدارة وقت سهلة.</p><div class="chips"><span class="chip">مواقف</span><span class="chip">غرف تبديل</span><span class="chip">إضاءة</span></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;gap:12px;flex-wrap:wrap"><span class="pill pill-green">متاح اليوم</span><div class="toolbar"><a class="btn btn-secondary" href="/venues/4/">التفاصيل</a><a class="btn btn-primary" href="/booking/">احجز الآن</a></div></div></div></article></div></div></div></section>
-<footer class="footer"><div class="container footer-inner"><div>© 2026 ملاعب. منصة حجز ملاعب رياضية.</div><div>واجهة عربية وتجربة حجز واضحة وسريعة.</div></div></footer></body></html>
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>الملاعب</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <script defer src="/assets/app.js"></script>
+  <style>
+    .venues-page {
+      padding: 32px 0 48px;
+    }
+
+    .page-head {
+      margin-bottom: 24px;
+    }
+
+    .page-head h1 {
+      margin: 0 0 8px;
+      font-size: 42px;
+      color: #0f172a;
+    }
+
+    .page-head p {
+      margin: 0;
+      color: #475569;
+      line-height: 1.8;
+    }
+
+    .notice-box {
+      display: none;
+      padding: 14px 16px;
+      border-radius: 14px;
+      margin-bottom: 18px;
+      font-size: 14px;
+      line-height: 1.7;
+      border: 1px solid transparent;
+    }
+
+    .notice-error {
+      background: #fee2e2;
+      color: #991b1b;
+      border-color: #fecaca;
+    }
+
+    .filters-box {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 22px;
+      padding: 22px;
+      margin-bottom: 20px;
+    }
+
+    .filters-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr auto;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field label {
+      font-size: 14px;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font: inherit;
+      background: #fff;
+      color: #0f172a;
+      outline: none;
+      box-sizing: border-box;
+    }
+
+    .venues-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .venue-card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 22px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+
+    .venue-card-image {
+      width: 100%;
+      height: 210px;
+      object-fit: cover;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .venue-card-placeholder {
+      width: 100%;
+      height: 210px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #eff6ff, #f8fafc);
+      color: #475569;
+      font-weight: 700;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .venue-card-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .venue-card-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .venue-card-title {
+      margin: 0;
+      font-size: 22px;
+      color: #0f172a;
+    }
+
+    .venue-card-sub {
+      color: #64748b;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+      color: #166534;
+      background: #dcfce7;
+    }
+
+    .venue-meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 12px;
+    }
+
+    .venue-meta-item {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 10px 12px;
+    }
+
+    .venue-meta-label {
+      display: block;
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 4px;
+    }
+
+    .venue-meta-value {
+      color: #0f172a;
+      font-weight: 700;
+      font-size: 14px;
+      word-break: break-word;
+    }
+
+    .venue-description {
+      margin: 0;
+      color: #334155;
+      line-height: 1.8;
+      font-size: 14px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 12px;
+      min-height: 84px;
+    }
+
+    .venue-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .empty-state {
+      padding: 24px;
+      text-align: center;
+      color: #64748b;
+      background: #fff;
+      border: 1px dashed #cbd5e1;
+      border-radius: 18px;
+    }
+
+    @media (max-width: 1100px) {
+      .venues-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .filters-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .venues-grid,
+      .filters-grid,
+      .venue-meta-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .page-head h1 {
+        font-size: 34px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container nav">
+      <a class="brand" href="/">ملاعب</a>
+
+      <nav class="nav-links">
+        <a class="nav-link" href="/">الرئيسية</a>
+        <a class="nav-link active" href="/venues/">الملاعب</a>
+        <a class="nav-link" href="/booking/">الحجز</a>
+        <a class="nav-link" href="/profile/">حسابي</a>
+        <a class="nav-link" href="/owner/">لوحة المالك</a>
+        <a class="nav-link" href="/admin/">لوحة الأدمن</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a class="btn btn-secondary" href="/login/">الدخول</a>
+        <a class="btn btn-primary" href="/register/">إنشاء حساب</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="venues-page">
+    <div class="container">
+      <div class="page-head">
+        <h1>الملاعب</h1>
+        <p>تصفح الملاعب الرياضية المعتمدة فقط، وابحث حسب الاسم أو المدينة أو الرياضة للوصول إلى الملعب المناسب بسرعة.</p>
+      </div>
+
+      <div id="page-message" class="notice-box"></div>
+
+      <section class="filters-box">
+        <div class="filters-grid">
+          <div class="field">
+            <label for="search-input">بحث</label>
+            <input id="search-input" type="text" placeholder="ابحث باسم الملعب أو المدينة أو الحي..." />
+          </div>
+
+          <div class="field">
+            <label for="sport-filter">الرياضة</label>
+            <select id="sport-filter">
+              <option value="ALL">الكل</option>
+              <option value="FOOTBALL">كرة قدم</option>
+              <option value="PADEL">بادل</option>
+              <option value="TENNIS">تنس</option>
+              <option value="BASKETBALL">كرة سلة</option>
+              <option value="VOLLEYBALL">كرة طائرة</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="city-filter">المدينة</label>
+            <select id="city-filter">
+              <option value="ALL">الكل</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <button id="refresh-btn" class="btn btn-secondary" type="button">تحديث</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="venues-list-wrap">
+        <div class="empty-state">جارِ تحميل الملاعب المعتمدة...</div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div>© 2026 ملاعب. منصة حجز ملاعب رياضية.</div>
+      <div>نعرض هنا الملاعب المعتمدة فقط بعد مراجعتها.</div>
+    </div>
+  </footer>
+
+  <script>
+    const pageMessage = document.getElementById('page-message');
+    let approvedVenues = [];
+
+    function showError(text) {
+      pageMessage.style.display = 'block';
+      pageMessage.textContent = text;
+      pageMessage.className = 'notice-box notice-error';
+    }
+
+    function clearMessage() {
+      pageMessage.style.display = 'none';
+      pageMessage.textContent = '';
+      pageMessage.className = 'notice-box';
+    }
+
+    async function httpJson(path, options = {}) {
+      const response = await fetch(`/api/v1${path}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(options.headers || {})
+        },
+        ...options
+      });
+
+      const data = await response.json().catch(() => ([]));
+
+      if (!response.ok) {
+        const message = data?.message || data?.error || 'حدث خطأ أثناء الاتصال بالخادم';
+        throw new Error(Array.isArray(message) ? message.join(', ') : message);
+      }
+
+      return data;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function extractCustomMeta(text) {
+      const source = String(text || '');
+      const cityMatch = source.match(/\[CUSTOM_CITY\]:(.*?)(\n|$)/);
+      const areaMatch = source.match(/\[CUSTOM_AREA\]:(.*?)(\n|$)/);
+
+      return {
+        customCity: cityMatch ? cityMatch[1].trim() : '',
+        customArea: areaMatch ? areaMatch[1].trim() : '',
+      };
+    }
+
+    function normalizeSportLabel(sportType) {
+      const value = String(sportType || '').toUpperCase();
+      if (value === 'FOOTBALL') return 'كرة قدم';
+      if (value === 'PADEL') return 'بادل';
+      if (value === 'TENNIS') return 'تنس';
+      if (value === 'BASKETBALL') return 'كرة سلة';
+      if (value === 'VOLLEYBALL') return 'كرة طائرة';
+      return sportType || '—';
+    }
+
+    function fillCityFilter(list) {
+      const cityFilter = document.getElementById('city-filter');
+      const currentValue = cityFilter.value || 'ALL';
+
+      const uniqueCities = [...new Set(
+        list.map((venue) => {
+          const meta = extractCustomMeta(venue.description || '');
+          return (
+            meta.customCity ||
+            venue.city?.nameAr ||
+            venue.cityNameAr ||
+            venue.cityName ||
+            ''
+          ).trim();
+        }).filter(Boolean)
+      )].sort((a, b) => a.localeCompare(b, 'ar'));
+
+      cityFilter.innerHTML = '<option value="ALL">الكل</option>' +
+        uniqueCities.map((city) => `<option value="${escapeHtml(city)}">${escapeHtml(city)}</option>`).join('');
+
+      if (uniqueCities.includes(currentValue)) {
+        cityFilter.value = currentValue;
+      } else {
+        cityFilter.value = 'ALL';
+      }
+    }
+
+    function getFilteredVenues() {
+      const search = document.getElementById('search-input').value.trim().toLowerCase();
+      const sportFilter = document.getElementById('sport-filter').value;
+      const cityFilter = document.getElementById('city-filter').value;
+
+      return approvedVenues.filter((venue) => {
+        const meta = extractCustomMeta(venue.description || '');
+
+        const cityName =
+          meta.customCity ||
+          venue.city?.nameAr ||
+          venue.cityNameAr ||
+          venue.cityName ||
+          '';
+
+        const areaName =
+          meta.customArea ||
+          venue.area?.nameAr ||
+          venue.areaNameAr ||
+          venue.areaName ||
+          '';
+
+        const haystack = [
+          venue.nameAr,
+          venue.name,
+          venue.sportType,
+          cityName,
+          areaName,
+          venue.description,
+        ]
+          .filter(Boolean)
+          .join(' ')
+          .toLowerCase();
+
+        const matchesSearch = !search || haystack.includes(search);
+        const matchesSport =
+          sportFilter === 'ALL' || String(venue.sportType || '').toUpperCase() === sportFilter;
+        const matchesCity =
+          cityFilter === 'ALL' || cityName === cityFilter;
+
+        return matchesSearch && matchesSport && matchesCity;
+      });
+    }
+
+    function renderVenues(list) {
+      const wrap = document.getElementById('venues-list-wrap');
+      const venues = Array.isArray(list) ? list : [];
+
+      if (!venues.length) {
+        wrap.innerHTML = '<div class="empty-state">لا توجد ملاعب معتمدة تطابق الفلاتر الحالية.</div>';
+        return;
+      }
+
+      wrap.innerHTML = `
+        <div class="venues-grid">
+          ${venues.map((venue) => {
+            const meta = extractCustomMeta(venue.description || '');
+
+            let cityName =
+              venue.city?.nameAr ||
+              venue.cityNameAr ||
+              venue.cityName ||
+              '—';
+
+            let areaName =
+              venue.area?.nameAr ||
+              venue.areaNameAr ||
+              venue.areaName ||
+              '—';
+
+            if (cityName === 'أخرى' && meta.customCity) {
+              cityName = meta.customCity;
+            }
+
+            if (areaName === 'أخرى' && meta.customArea) {
+              areaName = meta.customArea;
+            }
+
+            const description = String(venue.description || '')
+              .replace(/\[CUSTOM_CITY\]:(.*?)(\n|$)/g, '')
+              .replace(/\[CUSTOM_AREA\]:(.*?)(\n|$)/g, '')
+              .trim();
+
+            const imageBlock = venue.imageUrl
+              ? `<img class="venue-card-image" src="${escapeHtml(venue.imageUrl)}" alt="${escapeHtml(venue.nameAr || venue.name || 'ملعب')}" />`
+              : `<div class="venue-card-placeholder">لا توجد صورة</div>`;
+
+            return `
+              <article class="venue-card">
+                ${imageBlock}
+                <div class="venue-card-body">
+                  <div class="venue-card-head">
+                    <div>
+                      <h3 class="venue-card-title">${escapeHtml(venue.nameAr || venue.name || '—')}</h3>
+                      <div class="venue-card-sub">${escapeHtml(normalizeSportLabel(venue.sportType))}</div>
+                    </div>
+                    <span class="pill">معتمد</span>
+                  </div>
+
+                  <div class="venue-meta-grid">
+                    <div class="venue-meta-item">
+                      <span class="venue-meta-label">المدينة</span>
+                      <span class="venue-meta-value">${escapeHtml(cityName)}</span>
+                    </div>
+
+                    <div class="venue-meta-item">
+                      <span class="venue-meta-label">الحي</span>
+                      <span class="venue-meta-value">${escapeHtml(areaName)}</span>
+                    </div>
+
+                    <div class="venue-meta-item">
+                      <span class="venue-meta-label">السعر بالساعة</span>
+                      <span class="venue-meta-value">${escapeHtml(venue.defaultHourlyPrice || venue.pricePerHour || venue.hourlyPrice || venue.price || '—')}</span>
+                    </div>
+
+                    <div class="venue-meta-item">
+                      <span class="venue-meta-label">السعة</span>
+                      <span class="venue-meta-value">${escapeHtml(venue.capacity || '—')}</span>
+                    </div>
+                  </div>
+
+                  <p class="venue-description">${escapeHtml(description || 'لا يوجد وصف مضاف بعد.')}</p>
+
+                  <div class="venue-actions">
+                    <a class="btn btn-primary" href="/booking/">احجز الآن</a>
+                  </div>
+                </div>
+              </article>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    async function loadApprovedVenues() {
+      const refreshBtn = document.getElementById('refresh-btn');
+
+      try {
+        clearMessage();
+        refreshBtn.disabled = true;
+        refreshBtn.textContent = 'جارِ التحديث...';
+
+        const data = await httpJson('/venues', { method: 'GET' });
+        const allVenues = Array.isArray(data) ? data : [];
+
+        approvedVenues = allVenues.filter(
+          (venue) => String(venue.approvalStatus || '').toUpperCase() === 'APPROVED'
+        );
+
+        fillCityFilter(approvedVenues);
+        renderVenues(getFilteredVenues());
+      } catch (error) {
+        approvedVenues = [];
+        renderVenues([]);
+        showError(error.message || 'تعذر تحميل الملاعب المعتمدة.');
+      } finally {
+        refreshBtn.disabled = false;
+        refreshBtn.textContent = 'تحديث';
+      }
+    }
+
+    function bindFilters() {
+      document.getElementById('search-input').addEventListener('input', () => {
+        renderVenues(getFilteredVenues());
+      });
+
+      document.getElementById('sport-filter').addEventListener('change', () => {
+        renderVenues(getFilteredVenues());
+      });
+
+      document.getElementById('city-filter').addEventListener('change', () => {
+        renderVenues(getFilteredVenues());
+      });
+
+      document.getElementById('refresh-btn').addEventListener('click', loadApprovedVenues);
+    }
+
+    async function initPage() {
+      bindFilters();
+      await loadApprovedVenues();
+    }
+
+    initPage();
+  </script>
+</body>
+</html>
