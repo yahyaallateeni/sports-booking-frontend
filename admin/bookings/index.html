@@ -1,0 +1,448 @@
+cat > /var/www/sports-booking-web/admin/bookings/index.html <<'EOF'
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>حجوزات الأدمن</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <script defer src="/assets/app.js"></script>
+
+  <style>
+    .admin-bookings-page {
+      padding: 32px 0 48px;
+    }
+
+    .page-head {
+      margin-bottom: 24px;
+    }
+
+    .page-head h1 {
+      margin: 0 0 8px;
+      font-size: 42px;
+      color: #0f172a;
+    }
+
+    .page-head p {
+      margin: 0;
+      color: #475569;
+      line-height: 1.8;
+    }
+
+    .notice-box {
+      display: none;
+      padding: 14px 16px;
+      border-radius: 14px;
+      margin-bottom: 18px;
+      font-size: 14px;
+      line-height: 1.7;
+      border: 1px solid transparent;
+    }
+
+    .notice-error {
+      background: #fee2e2;
+      color: #991b1b;
+      border-color: #fecaca;
+    }
+
+    .card-box {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 22px;
+      padding: 22px;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 18px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field label {
+      font-size: 14px;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .field input {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font: inherit;
+      background: #ffffff;
+      color: #0f172a;
+      outline: none;
+      box-sizing: border-box;
+    }
+
+    .bookings-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .booking-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 16px;
+      background: #ffffff;
+    }
+
+    .booking-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .booking-title {
+      margin: 0;
+      font-size: 20px;
+      color: #0f172a;
+    }
+
+    .booking-sub {
+      margin-top: 4px;
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .booking-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .booking-meta-item {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 10px 12px;
+    }
+
+    .meta-label {
+      display: block;
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 4px;
+    }
+
+    .meta-value {
+      display: block;
+      color: #0f172a;
+      font-weight: 700;
+      font-size: 14px;
+      word-break: break-word;
+    }
+
+    .empty-state {
+      padding: 22px;
+      text-align: center;
+      color: #64748b;
+      background: #ffffff;
+      border: 1px dashed #cbd5e1;
+      border-radius: 18px;
+    }
+
+    @media (max-width: 900px) {
+      .toolbar,
+      .booking-meta-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .page-head h1 {
+        font-size: 34px;
+      }
+
+      .booking-head {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="container nav">
+      <a class="brand" href="/">ملاعب</a>
+
+      <nav class="nav-links">
+        <a class="nav-link" href="/">الرئيسية</a>
+        <a class="nav-link" href="/venues/">الملاعب</a>
+        <a class="nav-link" href="/booking/">الحجز</a>
+        <a class="nav-link" href="/profile/">حسابي</a>
+        <a class="nav-link" href="/owner/">لوحة المالك</a>
+        <a class="nav-link" href="/admin/">لوحة الأدمن</a>
+        <a class="nav-link active" href="/admin/bookings/">الحجوزات</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a class="btn btn-secondary" href="/login/">الدخول</a>
+        <a class="btn btn-primary" href="/register/">إنشاء حساب</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="admin-bookings-page">
+    <div class="container">
+      <div class="page-head">
+        <h1>الحجوزات</h1>
+        <p>عرض الحجوزات الواردة من العملاء بعد تأكيدها من صفحة الحجز.</p>
+      </div>
+
+      <div id="page-message" class="notice-box"></div>
+
+      <section class="card-box">
+        <div class="toolbar">
+          <div class="field">
+            <label for="search-input">بحث</label>
+            <input id="search-input" type="text" placeholder="ابحث باسم العميل أو الجوال أو الملعب..." />
+          </div>
+
+          <button id="refresh-btn" class="btn btn-secondary" type="button">تحديث</button>
+        </div>
+
+        <div id="bookings-list-wrap">
+          <div class="empty-state">جارِ تحميل الحجوزات...</div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div>© 2026 ملاعب. منصة حجز ملاعب رياضية.</div>
+      <div>لوحة متابعة الحجوزات.</div>
+    </div>
+  </footer>
+
+  <script>
+    const pageMessage = document.getElementById('page-message');
+    let allBookings = [];
+
+    function showError(text) {
+      pageMessage.style.display = 'block';
+      pageMessage.textContent = text;
+      pageMessage.className = 'notice-box notice-error';
+    }
+
+    function clearMessage() {
+      pageMessage.style.display = 'none';
+      pageMessage.textContent = '';
+      pageMessage.className = 'notice-box';
+    }
+
+    async function httpJson(path, options = {}) {
+      const response = await fetch(`/api/v1${path}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(options.headers || {})
+        },
+        ...options
+      });
+
+      const data = await response.json().catch(() => []);
+
+      if (!response.ok) {
+        const message = data?.message || data?.error || 'حدث خطأ أثناء الاتصال بالخادم';
+        throw new Error(Array.isArray(message) ? message.join(', ') : message);
+      }
+
+      return data;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function formatDate(value) {
+      if (!value) return '—';
+
+      const date = new Date(value);
+
+      if (Number.isNaN(date.getTime())) {
+        return value;
+      }
+
+      return date.toLocaleDateString('ar-SA', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      });
+    }
+
+    function normalizeBookingStatus(status) {
+      const value = String(status || '').toUpperCase();
+
+      if (value === 'CONFIRMED') return 'مؤكد';
+      if (value === 'CANCELLED') return 'ملغي';
+      if (value === 'PENDING') return 'قيد الانتظار';
+
+      return status || '—';
+    }
+
+    function getFilteredBookings() {
+      const search = document.getElementById('search-input').value.trim().toLowerCase();
+
+      if (!search) {
+        return allBookings;
+      }
+
+      return allBookings.filter((booking) => {
+        const haystack = [
+          booking.customerName,
+          booking.customerPhone,
+          booking.startTime,
+          booking.status,
+          booking.venue?.nameAr,
+          booking.venue?.name,
+          booking.venue?.addressLine,
+        ]
+          .filter(Boolean)
+          .join(' ')
+          .toLowerCase();
+
+        return haystack.includes(search);
+      });
+    }
+
+    function renderBookings(list) {
+      const wrap = document.getElementById('bookings-list-wrap');
+      const bookings = Array.isArray(list) ? list : [];
+
+      if (!bookings.length) {
+        wrap.innerHTML = '<div class="empty-state">لا توجد حجوزات مطابقة.</div>';
+        return;
+      }
+
+      wrap.innerHTML = `
+        <div class="bookings-grid">
+          ${bookings.map((booking) => {
+            const venueName = booking.venue?.nameAr || booking.venue?.name || '—';
+
+            return `
+              <article class="booking-card">
+                <div class="booking-head">
+                  <div>
+                    <h3 class="booking-title">${escapeHtml(booking.customerName || '—')}</h3>
+                    <div class="booking-sub">الملعب: ${escapeHtml(venueName)}</div>
+                  </div>
+
+                  <span class="pill">${escapeHtml(normalizeBookingStatus(booking.status))}</span>
+                </div>
+
+                <div class="booking-meta-grid">
+                  <div class="booking-meta-item">
+                    <span class="meta-label">رقم الجوال</span>
+                    <span class="meta-value">${escapeHtml(booking.customerPhone || '—')}</span>
+                  </div>
+
+                  <div class="booking-meta-item">
+                    <span class="meta-label">تاريخ الحجز</span>
+                    <span class="meta-value">${escapeHtml(formatDate(booking.bookingDate))}</span>
+                  </div>
+
+                  <div class="booking-meta-item">
+                    <span class="meta-label">وقت البداية</span>
+                    <span class="meta-value">${escapeHtml(booking.startTime || '—')}</span>
+                  </div>
+
+                  <div class="booking-meta-item">
+                    <span class="meta-label">عدد الساعات</span>
+                    <span class="meta-value">${escapeHtml(booking.durationHours || '—')}</span>
+                  </div>
+
+                  <div class="booking-meta-item">
+                    <span class="meta-label">الإجمالي</span>
+                    <span class="meta-value">${escapeHtml(booking.totalPrice || '—')} ريال</span>
+                  </div>
+
+                  <div class="booking-meta-item">
+                    <span class="meta-label">تاريخ الإنشاء</span>
+                    <span class="meta-value">${escapeHtml(formatDate(booking.createdAt))}</span>
+                  </div>
+
+                  <div class="booking-meta-item">
+                    <span class="meta-label">ملاحظات</span>
+                    <span class="meta-value">${escapeHtml(booking.notes || '—')}</span>
+                  </div>
+
+                  <div class="booking-meta-item">
+                    <span class="meta-label">رقم الحجز</span>
+                    <span class="meta-value">${escapeHtml(booking.id || '—')}</span>
+                  </div>
+                </div>
+              </article>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    async function loadBookings() {
+      const refreshBtn = document.getElementById('refresh-btn');
+
+      try {
+        clearMessage();
+
+        refreshBtn.disabled = true;
+        refreshBtn.textContent = 'جارِ التحديث...';
+
+        const data = await httpJson('/bookings', { method: 'GET' });
+
+        allBookings = Array.isArray(data) ? data : [];
+        renderBookings(getFilteredBookings());
+      } catch (error) {
+        allBookings = [];
+        renderBookings([]);
+        showError(error.message || 'تعذر تحميل الحجوزات.');
+      } finally {
+        refreshBtn.disabled = false;
+        refreshBtn.textContent = 'تحديث';
+      }
+    }
+
+    function bindEvents() {
+      document.getElementById('search-input').addEventListener('input', () => {
+        renderBookings(getFilteredBookings());
+      });
+
+      document.getElementById('refresh-btn').addEventListener('click', loadBookings);
+    }
+
+    async function initPage() {
+      bindEvents();
+      await loadBookings();
+    }
+
+    initPage();
+  </script>
+</body>
+</html>
+EOF
