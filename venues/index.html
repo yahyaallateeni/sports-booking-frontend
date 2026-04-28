@@ -392,7 +392,8 @@
         }).filter(Boolean)
       )].sort((a, b) => a.localeCompare(b, 'ar'));
 
-      cityFilter.innerHTML = '<option value="ALL">الكل</option>' +
+      cityFilter.innerHTML =
+        '<option value="ALL">الكل</option>' +
         uniqueCities.map((city) => `<option value="${escapeHtml(city)}">${escapeHtml(city)}</option>`).join('');
 
       if (uniqueCities.includes(currentValue)) {
