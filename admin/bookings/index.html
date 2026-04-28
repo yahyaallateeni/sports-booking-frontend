@@ -1,486 +1,406 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>حجوزات الأدمن</title>
-  <link rel="stylesheet" href="/assets/styles.css" />
-  <script defer src="/assets/app.js"></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>حجوزات الأدمن</title>
+<link rel="stylesheet" href="/assets/styles.css" />
+<script defer src="/assets/app.js"></script>
 
-  <style>
-    .admin-bookings-page { padding: 32px 0 48px; }
-    .page-head { margin-bottom: 24px; }
-    .page-head h1 { margin: 0 0 8px; font-size: 42px; color: #0f172a; }
-    .page-head p { margin: 0; color: #475569; line-height: 1.8; }
+<style>
 
-    .notice-box {
-      display: none;
-      padding: 14px 16px;
-      border-radius: 14px;
-      margin-bottom: 18px;
-      font-size: 14px;
-      line-height: 1.7;
-      border: 1px solid transparent;
-    }
+.admin-bookings-page { padding: 32px 0 48px; }
 
-    .notice-success { background: #dcfce7; color: #166534; border-color: #bbf7d0; }
-    .notice-error { background: #fee2e2; color: #991b1b; border-color: #fecaca; }
+.page-head { margin-bottom: 24px; }
 
-    .card-box {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 22px;
-      padding: 22px;
-    }
+.page-head h1 {
+margin: 0 0 8px;
+font-size: 42px;
+color: #0f172a;
+}
 
-    .toolbar {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 12px;
-      align-items: end;
-      margin-bottom: 18px;
-    }
+.page-head p {
+margin: 0;
+color: #475569;
+line-height: 1.8;
+}
 
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
+.notice-box {
+display: none;
+padding: 14px 16px;
+border-radius: 14px;
+margin-bottom: 18px;
+font-size: 14px;
+line-height: 1.7;
+border: 1px solid transparent;
+}
 
-    .field label {
-      font-size: 14px;
-      font-weight: 700;
-      color: #334155;
-    }
+.notice-success {
+background: #dcfce7;
+color: #166534;
+border-color: #bbf7d0;
+}
 
-    .field input {
-      width: 100%;
-      min-height: 48px;
-      border: 1px solid #cbd5e1;
-      border-radius: 14px;
-      padding: 12px 14px;
-      font: inherit;
-      background: #ffffff;
-      color: #0f172a;
-      outline: none;
-      box-sizing: border-box;
-    }
+.notice-error {
+background: #fee2e2;
+color: #991b1b;
+border-color: #fecaca;
+}
 
-    .bookings-grid {
-      display: grid;
-      gap: 14px;
-    }
+/* stats */
 
-    .booking-card {
-      border: 1px solid #e2e8f0;
-      border-radius: 18px;
-      padding: 16px;
-      background: #ffffff;
-    }
+.stats-grid {
+display: grid;
+grid-template-columns: repeat(4, minmax(0, 1fr));
+gap: 16px;
+margin-bottom: 20px;
+}
 
-    .booking-head {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
+.stat-card {
+background: #fff;
+border: 1px solid #e2e8f0;
+border-radius: 20px;
+padding: 20px;
+text-align: center;
+}
 
-    .booking-title {
-      margin: 0;
-      font-size: 20px;
-      color: #0f172a;
-    }
+.stat-card .num {
+font-size: 48px;
+font-weight: 800;
+color: #0f172a;
+margin-bottom: 6px;
+}
 
-    .booking-sub {
-      margin-top: 4px;
-      color: #64748b;
-      font-size: 14px;
-    }
+.stat-card .label {
+color: #334155;
+font-weight: 700;
+}
 
-    .status-box {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 10px;
-    }
+/* content */
 
-    .pill {
-      display: inline-block;
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
+.card-box {
+background: #ffffff;
+border: 1px solid #e2e8f0;
+border-radius: 22px;
+padding: 22px;
+}
 
-    .pill-pending { background: #fef3c7; color: #92400e; }
-    .pill-confirmed { background: #dcfce7; color: #166534; }
-    .pill-cancelled { background: #fee2e2; color: #991b1b; }
+.toolbar {
+display: grid;
+grid-template-columns: 1fr auto;
+gap: 12px;
+align-items: end;
+margin-bottom: 18px;
+}
 
-    .booking-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
+.field {
+display: flex;
+flex-direction: column;
+gap: 8px;
+}
 
-    .booking-meta-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px;
-    }
+.field label {
+font-size: 14px;
+font-weight: 700;
+color: #334155;
+}
 
-    .booking-meta-item {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 14px;
-      padding: 10px 12px;
-    }
+.field input {
+width: 100%;
+min-height: 48px;
+border: 1px solid #cbd5e1;
+border-radius: 14px;
+padding: 12px 14px;
+background: #fff;
+}
 
-    .meta-label {
-      display: block;
-      font-size: 12px;
-      color: #64748b;
-      margin-bottom: 4px;
-    }
+.bookings-grid {
+display: grid;
+gap: 14px;
+}
 
-    .meta-value {
-      display: block;
-      color: #0f172a;
-      font-weight: 700;
-      font-size: 14px;
-      word-break: break-word;
-    }
+.booking-card {
+border: 1px solid #e2e8f0;
+border-radius: 18px;
+padding: 16px;
+background: #fff;
+}
 
-    .empty-state {
-      padding: 22px;
-      text-align: center;
-      color: #64748b;
-      background: #ffffff;
-      border: 1px dashed #cbd5e1;
-      border-radius: 18px;
-    }
+.booking-head {
+display: flex;
+justify-content: space-between;
+margin-bottom: 12px;
+}
 
-    @media (max-width: 900px) {
-      .toolbar,
-      .booking-meta-grid {
-        grid-template-columns: 1fr;
-      }
+.booking-title {
+margin: 0;
+font-size: 20px;
+color: #0f172a;
+}
 
-      .page-head h1 {
-        font-size: 34px;
-      }
+.booking-sub {
+margin-top: 4px;
+color: #64748b;
+font-size: 14px;
+}
 
-      .booking-head {
-        flex-direction: column;
-      }
-    }
-  </style>
+.status-box {
+display: flex;
+flex-direction: column;
+gap: 10px;
+}
+
+.pill {
+padding: 6px 12px;
+border-radius: 999px;
+font-size: 13px;
+font-weight: 700;
+}
+
+.pill-pending {
+background: #fef3c7;
+color: #92400e;
+}
+
+.pill-confirmed {
+background: #dcfce7;
+color: #166534;
+}
+
+.pill-cancelled {
+background: #fee2e2;
+color: #991b1b;
+}
+
+.booking-actions {
+display: flex;
+gap: 8px;
+}
+
+.booking-meta-grid {
+display: grid;
+grid-template-columns: repeat(4, minmax(0, 1fr));
+gap: 10px;
+}
+
+.booking-meta-item {
+background: #f8fafc;
+border: 1px solid #e2e8f0;
+border-radius: 14px;
+padding: 10px 12px;
+}
+
+.meta-label {
+font-size: 12px;
+color: #64748b;
+}
+
+.meta-value {
+font-weight: 700;
+color: #0f172a;
+}
+
+.empty-state {
+padding: 22px;
+text-align: center;
+color: #64748b;
+border: 1px dashed #cbd5e1;
+border-radius: 18px;
+}
+
+@media(max-width:900px){
+.stats-grid,
+.booking-meta-grid{
+grid-template-columns:1fr;
+}
+}
+
+</style>
 </head>
 
 <body>
-  <header class="topbar">
-    <div class="container nav">
-      <a class="brand" href="/">ملاعب</a>
 
-      <nav class="nav-links">
-        <a class="nav-link" href="/">الرئيسية</a>
-        <a class="nav-link" href="/venues/">الملاعب</a>
-        <a class="nav-link" href="/booking/">الحجز</a>
-        <a class="nav-link" href="/profile/">حسابي</a>
-        <a class="nav-link" href="/owner/">لوحة المالك</a>
-        <a class="nav-link" href="/admin/">لوحة الأدمن</a>
-        <a class="nav-link active" href="/admin/bookings/">الحجوزات</a>
-      </nav>
+<header class="topbar">
+<div class="container nav">
+<a class="brand" href="/">ملاعب</a>
 
-      <div class="nav-actions">
-        <a class="btn btn-secondary" href="/login/">الدخول</a>
-        <a class="btn btn-primary" href="/register/">إنشاء حساب</a>
-      </div>
-    </div>
-  </header>
+<nav class="nav-links">
+<a class="nav-link" href="/">الرئيسية</a>
+<a class="nav-link" href="/venues/">الملاعب</a>
+<a class="nav-link" href="/booking/">الحجز</a>
+<a class="nav-link" href="/profile/">حسابي</a>
+<a class="nav-link" href="/owner/">لوحة المالك</a>
+<a class="nav-link" href="/admin/">لوحة الأدمن</a>
+<a class="nav-link active" href="/admin/bookings/">الحجوزات</a>
+</nav>
 
-  <main class="admin-bookings-page">
-    <div class="container">
-      <div class="page-head">
-        <h1>الحجوزات</h1>
-        <p>عرض الحجوزات الواردة من العملاء وإدارة حالتها.</p>
-      </div>
+</div>
+</header>
 
-      <div id="page-message" class="notice-box"></div>
+<main class="admin-bookings-page">
+<div class="container">
 
-      <section class="card-box">
-        <div class="toolbar">
-          <div class="field">
-            <label for="search-input">بحث</label>
-            <input id="search-input" type="text" placeholder="ابحث باسم العميل أو الجوال أو الملعب..." />
-          </div>
+<div class="page-head">
+<h1>الحجوزات</h1>
+<p>إدارة ومتابعة جميع الحجوزات.</p>
+</div>
 
-          <button id="refresh-btn" class="btn btn-secondary" type="button">تحديث</button>
-        </div>
+<div id="page-message" class="notice-box"></div>
 
-        <div id="bookings-list-wrap">
-          <div class="empty-state">جارِ تحميل الحجوزات...</div>
-        </div>
-      </section>
-    </div>
-  </main>
+<!-- stats -->
 
-  <footer class="footer">
-    <div class="container footer-inner">
-      <div>© 2026 ملاعب. منصة حجز ملاعب رياضية.</div>
-      <div>لوحة متابعة الحجوزات.</div>
-    </div>
-  </footer>
+<section class="stats-grid">
 
-  <script>
-    const pageMessage = document.getElementById('page-message');
-    let allBookings = [];
+<div class="stat-card">
+<div id="stat-total" class="num">0</div>
+<div class="label">إجمالي الحجوزات</div>
+</div>
 
-    function showMessage(text, type = 'success') {
-      pageMessage.style.display = 'block';
-      pageMessage.textContent = text;
-      pageMessage.className = type === 'success'
-        ? 'notice-box notice-success'
-        : 'notice-box notice-error';
-    }
+<div class="stat-card">
+<div id="stat-pending" class="num">0</div>
+<div class="label">قيد الانتظار</div>
+</div>
 
-    function clearMessage() {
-      pageMessage.style.display = 'none';
-      pageMessage.textContent = '';
-      pageMessage.className = 'notice-box';
-    }
+<div class="stat-card">
+<div id="stat-confirmed" class="num">0</div>
+<div class="label">مؤكدة</div>
+</div>
 
-    async function httpJson(path, options = {}) {
-      const response = await fetch(`/api/v1${path}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(options.headers || {})
-        },
-        ...options
-      });
+<div class="stat-card">
+<div id="stat-cancelled" class="num">0</div>
+<div class="label">ملغية</div>
+</div>
 
-      const data = await response.json().catch(() => []);
+</section>
 
-      if (!response.ok) {
-        const message = data?.message || data?.error || 'حدث خطأ أثناء الاتصال بالخادم';
-        throw new Error(Array.isArray(message) ? message.join(', ') : message);
-      }
+<section class="card-box">
 
-      return data;
-    }
+<div class="toolbar">
+<div class="field">
+<label>بحث</label>
+<input id="search-input">
+</div>
 
-    function escapeHtml(value) {
-      return String(value ?? '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-    }
+<button id="refresh-btn" class="btn btn-secondary">تحديث</button>
+</div>
 
-    function formatDate(value) {
-      if (!value) return '—';
+<div id="bookings-list-wrap">
+<div class="empty-state">جار تحميل الحجوزات...</div>
+</div>
 
-      const date = new Date(value);
+</section>
 
-      if (Number.isNaN(date.getTime())) {
-        return value;
-      }
+</div>
+</main>
 
-      return date.toLocaleDateString('ar-SA', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-      });
-    }
+<script>
 
-    function normalizeBookingStatus(status) {
-      const value = String(status || '').toUpperCase();
+let allBookings=[]
 
-      if (value === 'CONFIRMED') {
-        return { label: 'مؤكد', cls: 'pill pill-confirmed' };
-      }
+function updateStats(list){
 
-      if (value === 'CANCELLED') {
-        return { label: 'ملغي', cls: 'pill pill-cancelled' };
-      }
+document.getElementById('stat-total').textContent=list.length
 
-      return { label: 'قيد الانتظار', cls: 'pill pill-pending' };
-    }
+document.getElementById('stat-pending').textContent=
+list.filter(x=>x.status==='PENDING').length
 
-    function getFilteredBookings() {
-      const search = document.getElementById('search-input').value.trim().toLowerCase();
+document.getElementById('stat-confirmed').textContent=
+list.filter(x=>x.status==='CONFIRMED').length
 
-      if (!search) {
-        return allBookings;
-      }
+document.getElementById('stat-cancelled').textContent=
+list.filter(x=>x.status==='CANCELLED').length
 
-      return allBookings.filter((booking) => {
-        const haystack = [
-          booking.customerName,
-          booking.customerPhone,
-          booking.startTime,
-          booking.status,
-          booking.venue?.nameAr,
-          booking.venue?.name,
-          booking.venue?.addressLine
-        ]
-          .filter(Boolean)
-          .join(' ')
-          .toLowerCase();
+}
 
-        return haystack.includes(search);
-      });
-    }
+async function httpJson(path,options={}){
 
-    function renderBookings(list) {
-      const wrap = document.getElementById('bookings-list-wrap');
-      const bookings = Array.isArray(list) ? list : [];
+const res=await fetch(`/api/v1${path}`,{
+headers:{'Content-Type':'application/json'},
+...options
+})
 
-      if (!bookings.length) {
-        wrap.innerHTML = '<div class="empty-state">لا توجد حجوزات مطابقة.</div>';
-        return;
-      }
+return res.json()
 
-      wrap.innerHTML = `
-        <div class="bookings-grid">
-          ${bookings.map((booking) => {
-            const venueName = booking.venue?.nameAr || booking.venue?.name || '—';
-            const statusInfo = normalizeBookingStatus(booking.status);
+}
 
-            return `
-              <article class="booking-card">
-                <div class="booking-head">
-                  <div>
-                    <h3 class="booking-title">${escapeHtml(booking.customerName || '—')}</h3>
-                    <div class="booking-sub">الملعب: ${escapeHtml(venueName)}</div>
-                  </div>
+async function loadBookings(){
 
-                  <div class="status-box">
-                    <span class="${statusInfo.cls}">${escapeHtml(statusInfo.label)}</span>
+const data=await httpJson('/bookings')
 
-                    <div class="booking-actions">
-                      <button class="btn btn-primary" type="button" data-action="confirm" data-id="${escapeHtml(booking.id)}">تأكيد</button>
-                      <button class="btn btn-secondary" type="button" data-action="cancel" data-id="${escapeHtml(booking.id)}">إلغاء</button>
-                    </div>
-                  </div>
-                </div>
+allBookings=data
 
-                <div class="booking-meta-grid">
-                  <div class="booking-meta-item">
-                    <span class="meta-label">رقم الجوال</span>
-                    <span class="meta-value">${escapeHtml(booking.customerPhone || '—')}</span>
-                  </div>
+updateStats(allBookings)
 
-                  <div class="booking-meta-item">
-                    <span class="meta-label">تاريخ الحجز</span>
-                    <span class="meta-value">${escapeHtml(formatDate(booking.bookingDate))}</span>
-                  </div>
+renderBookings(allBookings)
 
-                  <div class="booking-meta-item">
-                    <span class="meta-label">وقت البداية</span>
-                    <span class="meta-value">${escapeHtml(booking.startTime || '—')}</span>
-                  </div>
+}
 
-                  <div class="booking-meta-item">
-                    <span class="meta-label">عدد الساعات</span>
-                    <span class="meta-value">${escapeHtml(booking.durationHours || '—')}</span>
-                  </div>
+function renderBookings(list){
 
-                  <div class="booking-meta-item">
-                    <span class="meta-label">الإجمالي</span>
-                    <span class="meta-value">${escapeHtml(booking.totalPrice || '—')} ريال</span>
-                  </div>
+const wrap=document.getElementById('bookings-list-wrap')
 
-                  <div class="booking-meta-item">
-                    <span class="meta-label">تاريخ الإنشاء</span>
-                    <span class="meta-value">${escapeHtml(formatDate(booking.createdAt))}</span>
-                  </div>
+if(!list.length){
 
-                  <div class="booking-meta-item">
-                    <span class="meta-label">ملاحظات</span>
-                    <span class="meta-value">${escapeHtml(booking.notes || '—')}</span>
-                  </div>
+wrap.innerHTML='<div class="empty-state">لا توجد حجوزات</div>'
 
-                  <div class="booking-meta-item">
-                    <span class="meta-label">رقم الحجز</span>
-                    <span class="meta-value">${escapeHtml(booking.id || '—')}</span>
-                  </div>
-                </div>
-              </article>
-            `;
-          }).join('')}
-        </div>
-      `;
-    }
+return
 
-    async function loadBookings() {
-      const refreshBtn = document.getElementById('refresh-btn');
+}
 
-      try {
-        clearMessage();
+wrap.innerHTML=list.map(b=>`
 
-        refreshBtn.disabled = true;
-        refreshBtn.textContent = 'جارِ التحديث...';
+<div class="booking-card">
 
-        const data = await httpJson('/bookings', { method: 'GET' });
+<div class="booking-head">
 
-        allBookings = Array.isArray(data) ? data : [];
-        renderBookings(getFilteredBookings());
-      } catch (error) {
-        allBookings = [];
-        renderBookings([]);
-        showMessage(error.message || 'تعذر تحميل الحجوزات.', 'error');
-      } finally {
-        refreshBtn.disabled = false;
-        refreshBtn.textContent = 'تحديث';
-      }
-    }
+<div>
 
-    async function updateBookingStatus(id, status) {
-      try {
-        clearMessage();
+<h3 class="booking-title">${b.customerName}</h3>
 
-        await httpJson(`/bookings/${id}/status`, {
-          method: 'PATCH',
-          body: JSON.stringify({ status })
-        });
+<div class="booking-sub">الملعب: ${b.venue?.nameAr||''}</div>
 
-        showMessage(status === 'CONFIRMED' ? 'تم تأكيد الحجز بنجاح.' : 'تم إلغاء الحجز بنجاح.');
-        await loadBookings();
-      } catch (error) {
-        showMessage(error.message || 'تعذر تحديث حالة الحجز.', 'error');
-      }
-    }
+</div>
 
-    function bindEvents() {
-      document.getElementById('search-input').addEventListener('input', () => {
-        renderBookings(getFilteredBookings());
-      });
+<div class="status-box">
 
-      document.getElementById('refresh-btn').addEventListener('click', loadBookings);
+<span class="pill pill-${b.status.toLowerCase()}">
 
-      document.getElementById('bookings-list-wrap').addEventListener('click', async (event) => {
-        const button = event.target.closest('[data-action][data-id]');
-        if (!button) return;
+${b.status}
 
-        const id = button.getAttribute('data-id');
-        const action = button.getAttribute('data-action');
+</span>
 
-        button.disabled = true;
-        button.textContent = action === 'confirm' ? 'جارِ التأكيد...' : 'جارِ الإلغاء...';
+<div class="booking-actions">
 
-        await updateBookingStatus(id, action === 'confirm' ? 'CONFIRMED' : 'CANCELLED');
-      });
-    }
+<button onclick="updateBooking('${b.id}','CONFIRMED')" class="btn btn-primary">تأكيد</button>
 
-    async function initPage() {
-      bindEvents();
-      await loadBookings();
-    }
+<button onclick="updateBooking('${b.id}','CANCELLED')" class="btn btn-secondary">إلغاء</button>
 
-    initPage();
-  </script>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+`).join('')
+
+}
+
+async function updateBooking(id,status){
+
+await httpJson(`/bookings/${id}/status`,{
+method:'PATCH',
+body:JSON.stringify({status})
+})
+
+loadBookings()
+
+}
+
+loadBookings()
+
+</script>
+
 </body>
 </html>
