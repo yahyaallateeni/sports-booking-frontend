@@ -537,7 +537,7 @@
 
                   <div class="booking-meta-item">
                     <span class="meta-label">رقم الحجز</span>
-                    <span class="meta-value">${escapeHtml(booking.id || '—')}</span>
+                    <span class="meta-value">${escapeHtml(booking.id ? '#' + booking.id.slice(-8) : '—')}</span>
                   </div>
                 </div>
               </article>
