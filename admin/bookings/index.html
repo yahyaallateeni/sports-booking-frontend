@@ -413,6 +413,62 @@
       });
     }
 
+    function renderBookingActions(booking) {
+
+      const status = String(booking.status || '').toUpperCase();
+
+      const id = escapeHtml(booking.id);
+
+
+
+      if (status === 'CONFIRMED') {
+
+        return `
+
+          <div class="booking-actions">
+
+            <button class="btn btn-secondary" type="button" data-action="cancel" data-id="${id}">إلغاء</button>
+
+          </div>
+
+        `;
+
+      }
+
+
+
+      if (status === 'CANCELLED') {
+
+        return `
+
+          <div class="booking-actions">
+
+            <button class="btn btn-primary" type="button" data-action="confirm" data-id="${id}">تأكيد</button>
+
+          </div>
+
+        `;
+
+      }
+
+
+
+      return `
+
+        <div class="booking-actions">
+
+          <button class="btn btn-primary" type="button" data-action="confirm" data-id="${id}">تأكيد</button>
+
+          <button class="btn btn-secondary" type="button" data-action="cancel" data-id="${id}">إلغاء</button>
+
+        </div>
+
+      `;
+
+    }
+
+
+
     function renderBookings(list) {
       const wrap = document.getElementById('bookings-list-wrap');
       const bookings = Array.isArray(list) ? list : [];
@@ -439,10 +495,7 @@
                   <div class="status-box">
                     <span class="${statusInfo.cls}">${escapeHtml(statusInfo.label)}</span>
 
-                    <div class="booking-actions">
-                      <button class="btn btn-primary" type="button" data-action="confirm" data-id="${escapeHtml(booking.id)}">تأكيد</button>
-                      <button class="btn btn-secondary" type="button" data-action="cancel" data-id="${escapeHtml(booking.id)}">إلغاء</button>
-                    </div>
+                    ${renderBookingActions(booking)}
                   </div>
                 </div>
 
