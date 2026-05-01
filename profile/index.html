@@ -1,162 +1,613 @@
+
 <!doctype html>
+
 <html lang="ar" dir="rtl">
+
 <head>
+
   <meta charset="utf-8" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <title>حسابي</title>
+
   <link rel="stylesheet" href="/assets/styles.css" />
+
   <script defer src="/assets/app.js"></script>
+
+
+
+  <style>
+
+    .profile-page { padding: 96px 0 48px; }
+
+    .page-head { margin-bottom: 24px; }
+
+    .page-head h1 { margin: 0 0 8px; font-size: 42px; color: #0f172a; }
+
+    .page-head p { margin: 0; color: #475569; line-height: 1.8; }
+
+
+
+    .profile-layout {
+
+      display: grid;
+
+      grid-template-columns: 1fr 1fr;
+
+      gap: 18px;
+
+      align-items: start;
+
+    }
+
+
+
+    .card-box {
+
+      background: #fff;
+
+      border: 1px solid #e2e8f0;
+
+      border-radius: 22px;
+
+      padding: 22px;
+
+    }
+
+
+
+    .card-box h2 {
+
+      margin: 0 0 16px;
+
+      color: #0f172a;
+
+      font-size: 24px;
+
+    }
+
+
+
+    .info-list {
+
+      display: grid;
+
+      gap: 12px;
+
+    }
+
+
+
+    .info-row {
+
+      display: flex;
+
+      justify-content: space-between;
+
+      gap: 12px;
+
+      padding: 12px 0;
+
+      border-bottom: 1px solid #e2e8f0;
+
+    }
+
+
+
+    .info-row:last-child {
+
+      border-bottom: none;
+
+    }
+
+
+
+    .label {
+
+      color: #64748b;
+
+      font-size: 14px;
+
+    }
+
+
+
+    .value {
+
+      color: #0f172a;
+
+      font-weight: 700;
+
+      text-align: left;
+
+      word-break: break-word;
+
+    }
+
+
+
+    .quick-links {
+
+      display: grid;
+
+      gap: 10px;
+
+    }
+
+
+
+    .quick-link {
+
+      display: block;
+
+      padding: 14px 16px;
+
+      border: 1px solid #e2e8f0;
+
+      border-radius: 14px;
+
+      color: #0f172a;
+
+      text-decoration: none;
+
+      font-weight: 700;
+
+      background: #f8fafc;
+
+    }
+
+
+
+    .quick-link:hover {
+
+      background: #eef2ff;
+
+    }
+
+
+
+    .actions {
+
+      display: flex;
+
+      gap: 10px;
+
+      flex-wrap: wrap;
+
+      margin-top: 18px;
+
+    }
+
+
+
+    .notice-box {
+
+      display: none;
+
+      padding: 14px 16px;
+
+      border-radius: 14px;
+
+      margin-bottom: 18px;
+
+      font-size: 14px;
+
+      border: 1px solid #fecaca;
+
+      background: #fee2e2;
+
+      color: #991b1b;
+
+    }
+
+
+
+    @media (max-width: 900px) {
+
+      .profile-layout { grid-template-columns: 1fr; }
+
+      .page-head h1 { font-size: 34px; }
+
+      .info-row { flex-direction: column; }
+
+      .value { text-align: right; }
+
+    }
+
+  </style>
+
 </head>
+
+
+
 <body>
+
   <header class="topbar">
+
     <div class="container nav">
+
       <a class="brand" href="/">ملاعب</a>
+
+
+
       <nav class="nav-links">
+
         <a class="nav-link" href="/">الرئيسية</a>
+
         <a class="nav-link" href="/venues/">الملاعب</a>
-        <a class="nav-link" href="/booking/">الحجز</a>
-        <a class="nav-link" href="/profile/">حسابي</a>
-        <a class="nav-link" href="/owner/">لوحة المالك</a>
-        <a class="nav-link" href="/admin/">لوحة الأدمن</a>
+
+        <a class="nav-link active" href="/profile/">حسابي</a>
+
       </nav>
+
+
+
       <div class="nav-actions">
+
         <a class="btn btn-secondary" href="/login/">الدخول</a>
+
         <a class="btn btn-primary" href="/register/">إنشاء حساب</a>
+
       </div>
+
     </div>
+
   </header>
 
-  <section class="dashboard-wrap">
+
+
+  <main class="profile-page">
+
     <div class="container">
-      <h1 class="page-title">حسابي</h1>
-      <p class="page-sub">لوحة العميل للوصول السريع إلى الحجوزات والمفضلة والإشعارات.</p>
 
-      <div id="profile-alert" class="notice" style="display:none; margin-top:16px;"></div>
+      <div class="page-head">
 
-      <div class="grid-4" style="margin-top:20px">
-        <div class="kpi">
-          <div class="v">2</div>
-          <div>حجوزات قادمة</div>
-        </div>
-        <div class="kpi">
-          <div class="v">5</div>
-          <div>مفضلات</div>
-        </div>
-        <div class="kpi">
-          <div class="v">3</div>
-          <div>إشعارات جديدة</div>
-        </div>
-        <div class="kpi">
-          <div class="v">1</div>
-          <div>فاتورة غير مدفوعة</div>
-        </div>
+        <h1>حسابي</h1>
+
+        <p>بيانات الحساب المسجلة في النظام وروابط الوصول المناسبة لنوع الحساب.</p>
+
       </div>
 
-      <div class="grid-2" style="margin-top:20px">
-        <div class="card card-body">
-          <h3 style="margin-top:0">بيانات الحساب</h3>
-          <table class="table">
-            <tr><td>الاسم</td><td id="profile-name">—</td></tr>
-            <tr><td>البريد</td><td id="profile-email">—</td></tr>
-            <tr><td>الجوال</td><td id="profile-phone">—</td></tr>
-            <tr><td>نوع الحساب</td><td id="profile-type">—</td></tr>
-            <tr><td>الحالة</td><td id="profile-status">—</td></tr>
-          </table>
 
-          <div class="toolbar" style="margin-top:16px">
-            <button id="logout-btn" class="btn btn-secondary" type="button">تسجيل الخروج</button>
-          </div>
-        </div>
 
-        <div class="card card-body">
-          <h3 style="margin-top:0">روابط سريعة</h3>
-          <div class="side-menu">
-            <a href="/my-bookings/">حجوزاتي</a>
-            <a href="/favorites/">المفضلة</a>
-            <a href="/notifications/">الإشعارات</a>
-            <a href="/booking/">احجز الآن</a>
+      <div id="page-message" class="notice-box"></div>
+
+
+
+      <div class="profile-layout">
+
+        <section class="card-box">
+
+          <h2>بيانات الحساب</h2>
+
+
+
+          <div class="info-list">
+
+            <div class="info-row">
+
+              <span class="label">الاسم</span>
+
+              <span id="profile-name" class="value">—</span>
+
+            </div>
+
+
+
+            <div class="info-row">
+
+              <span class="label">البريد</span>
+
+              <span id="profile-email" class="value">—</span>
+
+            </div>
+
+
+
+            <div class="info-row">
+
+              <span class="label">الجوال</span>
+
+              <span id="profile-phone" class="value">—</span>
+
+            </div>
+
+
+
+            <div class="info-row">
+
+              <span class="label">نوع الحساب</span>
+
+              <span id="profile-type" class="value">—</span>
+
+            </div>
+
+
+
+            <div class="info-row">
+
+              <span class="label">حالة الحساب</span>
+
+              <span id="profile-status" class="value">—</span>
+
+            </div>
+
           </div>
-        </div>
+
+
+
+          <div class="actions">
+
+            <button id="logout-btn" class="btn btn-primary" type="button">تسجيل الخروج</button>
+
+          </div>
+
+        </section>
+
+
+
+        <section class="card-box">
+
+          <h2>روابط مناسبة لحسابك</h2>
+
+          <div id="quick-links" class="quick-links"></div>
+
+        </section>
+
       </div>
+
     </div>
-  </section>
+
+  </main>
+
+
 
   <footer class="footer">
+
     <div class="container footer-inner">
+
       <div>© 2026 ملاعب. منصة حجز ملاعب رياضية.</div>
-      <div>واجهة عربية وتجربة حجز واضحة وسريعة.</div>
+
+      <div>صفحة حساب حقيقية بدون بيانات تجريبية.</div>
+
     </div>
+
   </footer>
 
+
+
   <script>
-    function mapAccountType(value) {
-      if (value === 'OWNER') return 'مالك ملعب';
-      if (value === 'ADMIN') return 'أدمن';
-      return 'مستخدم';
-    }
 
-    function showAlert(text, isError = false) {
-      const box = document.getElementById('profile-alert');
-      box.style.display = 'block';
-      box.textContent = text;
-      box.style.background = isError ? '#fee2e2' : '#dcfce7';
-      box.style.borderColor = isError ? '#fecaca' : '#bbf7d0';
-      box.style.color = isError ? '#991b1b' : '#166534';
-    }
+    function getStoredUser() {
 
-    function readUser() {
+      const raw = localStorage.getItem('currentUser') || sessionStorage.getItem('currentUser');
+
+
+
+      if (!raw) return null;
+
+
+
       try {
-        const localUser = localStorage.getItem('currentUser');
-        if (localUser) return JSON.parse(localUser);
 
-        const sessionUser = sessionStorage.getItem('currentUser');
-        if (sessionUser) return JSON.parse(sessionUser);
+        return JSON.parse(raw);
+
+      } catch {
 
         return null;
-      } catch (error) {
-        return null;
+
       }
+
     }
 
-    function fillProfile(user) {
-      const displayName =
-        user.fullName ||
-        [user.firstName, user.lastName].filter(Boolean).join(' ').trim() ||
-        user.email ||
-        user.phone ||
-        '—';
 
-      document.getElementById('profile-name').textContent = displayName;
-      document.getElementById('profile-email').textContent = user.email || 'غير مضاف';
-      document.getElementById('profile-phone').textContent = user.phone || 'غير مضاف';
-      document.getElementById('profile-type').textContent = mapAccountType(user.accountType);
-      document.getElementById('profile-status').textContent = user.status || 'ACTIVE';
+
+    function isAuthenticated() {
+
+      return (
+
+        localStorage.getItem('isAuthenticated') === 'true' ||
+
+        sessionStorage.getItem('isAuthenticated') === 'true'
+
+      );
+
     }
 
-    const user = readUser();
 
-    if (!user || (!user.id && !user.email && !user.phone)) {
-      showAlert('لم يتم العثور على جلسة تسجيل دخول صالحة. سيتم تحويلك إلى صفحة الدخول.', true);
-      setTimeout(() => {
-        window.location.href = '/login/';
-      }, 1800);
-    } else {
-      fillProfile(user);
+
+    function mapAccountType(value) {
+
+      const type = String(value || '').toUpperCase();
+
+
+
+      if (type === 'ADMIN') return 'أدمن';
+
+      if (type === 'OWNER') return 'مالك ملعب';
+
+      return 'مستخدم';
+
     }
 
-    document.getElementById('logout-btn').addEventListener('click', () => {
+
+
+    function mapStatus(value) {
+
+      const status = String(value || '').toUpperCase();
+
+
+
+      if (status === 'ACTIVE') return 'نشط';
+
+      if (status === 'SUSPENDED') return 'موقوف';
+
+      if (status === 'PENDING_VERIFICATION') return 'بانتظار التحقق';
+
+
+
+      return value || '—';
+
+    }
+
+
+
+    function clearSession() {
+
       localStorage.removeItem('accessToken');
+
       localStorage.removeItem('refreshToken');
+
       localStorage.removeItem('currentUser');
+
       localStorage.removeItem('isAuthenticated');
 
+      localStorage.removeItem('registeredUserId');
+
+      localStorage.removeItem('registeredAccountType');
+
+
+
       sessionStorage.removeItem('accessToken');
+
       sessionStorage.removeItem('refreshToken');
+
       sessionStorage.removeItem('currentUser');
+
       sessionStorage.removeItem('isAuthenticated');
 
+
+
       window.location.href = '/login/';
-    });
+
+    }
+
+
+
+    function renderQuickLinks(user) {
+
+      const accountType = String(user.accountType || 'CUSTOMER').toUpperCase();
+
+
+
+      let links = [
+
+        { href: '/', label: 'الرئيسية' },
+
+        { href: '/venues/', label: 'الملاعب' }
+
+      ];
+
+
+
+      if (accountType === 'CUSTOMER') {
+
+        links = [
+
+          ...links,
+
+          { href: '/booking/', label: 'حجز ملعب' },
+
+          { href: '/customer/bookings/', label: 'حجوزاتي' }
+
+        ];
+
+      }
+
+
+
+      if (accountType === 'OWNER') {
+
+        links = [
+
+          ...links,
+
+          { href: '/owner/', label: 'لوحة المالك' },
+
+          { href: '/owner/venues-management/', label: 'إدارة الملاعب' },
+
+          { href: '/owner/bookings/', label: 'حجوزات ملاعبي' }
+
+        ];
+
+      }
+
+
+
+      if (accountType === 'ADMIN') {
+
+        links = [
+
+          ...links,
+
+          { href: '/admin/', label: 'لوحة الأدمن' },
+
+          { href: '/admin/bookings/', label: 'كل الحجوزات' }
+
+        ];
+
+      }
+
+
+
+      document.getElementById('quick-links').innerHTML = links
+
+        .map((link) => `<a class="quick-link" href="${link.href}">${link.label}</a>`)
+
+        .join('');
+
+    }
+
+
+
+    function initProfile() {
+
+      const user = getStoredUser();
+
+
+
+      if (!user || !isAuthenticated()) {
+
+        window.location.href = '/login/';
+
+        return;
+
+      }
+
+
+
+      document.getElementById('profile-name').textContent =
+
+        user.fullName || [user.firstName, user.lastName].filter(Boolean).join(' ') || '—';
+
+
+
+      document.getElementById('profile-email').textContent = user.email || '—';
+
+      document.getElementById('profile-phone').textContent = user.phone || '—';
+
+      document.getElementById('profile-type').textContent = mapAccountType(user.accountType);
+
+      document.getElementById('profile-status').textContent = mapStatus(user.status);
+
+
+
+      renderQuickLinks(user);
+
+
+
+      document.getElementById('logout-btn').addEventListener('click', clearSession);
+
+    }
+
+
+
+    initProfile();
+
   </script>
+
 </body>
+
 </html>
+

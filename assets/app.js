@@ -187,6 +187,8 @@
 
       { href: '/booking/', label: 'الحجز' },
 
+      { href: '/customer/bookings/', label: 'حجوزاتي' },
+
       { href: '/profile/', label: 'حسابي' }
 
     ];
