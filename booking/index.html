@@ -1,622 +1,1447 @@
+
 <!doctype html>
+
 <html lang="ar" dir="rtl">
+
 <head>
+
   <meta charset="utf-8" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <title>حجز ملعب</title>
+
   <link rel="stylesheet" href="/assets/styles.css" />
+
   <script defer src="/assets/app.js"></script>
 
+
+
   <style>
-    .booking-page {
-      padding: 32px 0 48px;
-    }
 
-    .page-head {
-      margin-bottom: 24px;
-    }
+    .booking-page { padding: 96px 0 48px; }
 
-    .page-head h1 {
-      margin: 0 0 8px;
-      font-size: 42px;
-      color: #0f172a;
-    }
+    .page-head { margin-bottom: 24px; }
 
-    .page-head p {
-      margin: 0;
-      color: #475569;
-      line-height: 1.8;
-    }
+    .page-head h1 { margin: 0 0 8px; font-size: 42px; color: #0f172a; }
+
+    .page-head p { margin: 0; color: #475569; line-height: 1.8; }
+
+
 
     .notice-box {
+
       display: none;
+
       padding: 14px 16px;
+
       border-radius: 14px;
+
       margin-bottom: 18px;
+
       font-size: 14px;
+
       line-height: 1.7;
+
       border: 1px solid transparent;
+
     }
 
-    .notice-error {
-      background: #fee2e2;
-      color: #991b1b;
-      border-color: #fecaca;
-    }
 
-    .notice-success {
-      background: #dcfce7;
-      color: #166534;
-      border-color: #bbf7d0;
-    }
+
+    .notice-error { background: #fee2e2; color: #991b1b; border-color: #fecaca; }
+
+    .notice-success { background: #dcfce7; color: #166534; border-color: #bbf7d0; }
+
+
 
     .booking-layout {
+
       display: grid;
+
       grid-template-columns: 1.1fr 0.9fr;
+
       gap: 20px;
+
       align-items: start;
+
     }
+
+
 
     .panel {
+
       background: #ffffff;
+
       border: 1px solid #e2e8f0;
+
       border-radius: 22px;
+
       padding: 22px;
+
     }
+
+
 
     .panel h2 {
+
       margin: 0 0 16px;
+
       font-size: 24px;
+
       color: #0f172a;
+
     }
 
-    .venue-box {
-      display: grid;
-      gap: 12px;
-    }
 
-    .venue-title {
-      margin: 0;
-      font-size: 28px;
-      color: #0f172a;
-    }
+
+    .venue-box { display: grid; gap: 12px; }
+
+    .venue-title { margin: 0; font-size: 28px; color: #0f172a; }
+
+
 
     .venue-meta-grid {
+
       display: grid;
+
       grid-template-columns: 1fr 1fr;
+
       gap: 10px 12px;
+
     }
+
+
 
     .venue-meta-item,
+
     .summary-item {
+
       background: #f8fafc;
+
       border: 1px solid #e2e8f0;
+
       border-radius: 14px;
+
       padding: 10px 12px;
+
     }
+
+
 
     .meta-label {
+
       display: block;
+
       font-size: 12px;
+
       color: #64748b;
+
       margin-bottom: 4px;
+
     }
+
+
 
     .meta-value {
+
       color: #0f172a;
+
       font-weight: 700;
+
       font-size: 14px;
+
       word-break: break-word;
+
     }
+
+
 
     .booking-form {
+
       display: grid;
+
       gap: 14px;
+
     }
+
+
 
     .form-grid {
+
       display: grid;
+
       grid-template-columns: 1fr 1fr;
+
       gap: 14px;
+
     }
+
+
 
     .field {
+
       display: flex;
+
       flex-direction: column;
+
       gap: 8px;
+
     }
+
+
 
     .field label {
+
       font-size: 14px;
+
       font-weight: 700;
+
       color: #334155;
+
     }
+
+
 
     .field input,
-    .field select,
+
     .field textarea {
+
       width: 100%;
+
       min-height: 48px;
+
       border: 1px solid #cbd5e1;
+
       border-radius: 14px;
+
       padding: 12px 14px;
+
       font: inherit;
+
       background: #ffffff;
+
       color: #0f172a;
+
       outline: none;
+
       box-sizing: border-box;
+
     }
+
+
 
     .field textarea {
+
       min-height: 110px;
+
       resize: vertical;
+
     }
 
-    .summary-box {
-      display: grid;
-      gap: 10px;
+
+
+    .busy-slots-box {
+
+      display: none;
+
+      margin-bottom: 16px;
+
+      padding: 14px 16px;
+
+      border-radius: 16px;
+
+      background: #fffbeb;
+
+      border: 1px solid #fde68a;
+
+      color: #92400e;
+
+      line-height: 1.8;
+
     }
+
+
+
+    .busy-slots-title {
+
+      font-weight: 800;
+
+      margin-bottom: 8px;
+
+      color: #78350f;
+
+    }
+
+
+
+    .busy-slots-list {
+
+      display: flex;
+
+      flex-wrap: wrap;
+
+      gap: 8px;
+
+    }
+
+
+
+    .busy-slot-pill {
+
+      display: inline-block;
+
+      padding: 6px 10px;
+
+      border-radius: 999px;
+
+      background: #fef3c7;
+
+      color: #92400e;
+
+      font-size: 13px;
+
+      font-weight: 700;
+
+    }
+
+
+
+    .summary-box { display: grid; gap: 10px; }
+
+
 
     .summary-total {
+
       margin-top: 6px;
+
       padding: 14px 16px;
+
       border-radius: 16px;
+
       background: #eff6ff;
+
       color: #1e3a8a;
+
       font-weight: 800;
+
       font-size: 18px;
+
       border: 1px solid #bfdbfe;
+
     }
+
+
 
     .actions {
+
       display: flex;
+
       gap: 10px;
+
       flex-wrap: wrap;
+
       margin-top: 8px;
+
     }
+
+
 
     .empty-state {
+
       padding: 24px;
+
       text-align: center;
+
       color: #64748b;
+
       background: #ffffff;
+
       border: 1px dashed #cbd5e1;
+
       border-radius: 18px;
+
     }
+
+
 
     @media (max-width: 900px) {
+
       .booking-layout,
+
       .form-grid,
+
       .venue-meta-grid {
+
         grid-template-columns: 1fr;
+
       }
 
-      .page-head h1 {
-        font-size: 34px;
-      }
+
+
+      .page-head h1 { font-size: 34px; }
+
     }
+
   </style>
+
 </head>
 
+
+
 <body>
+
   <header class="topbar">
+
     <div class="container nav">
+
       <a class="brand" href="/">ملاعب</a>
 
+
+
       <nav class="nav-links">
+
         <a class="nav-link" href="/">الرئيسية</a>
+
         <a class="nav-link" href="/venues/">الملاعب</a>
+
         <a class="nav-link active" href="/booking/">الحجز</a>
+
         <a class="nav-link" href="/profile/">حسابي</a>
-        <a class="nav-link" href="/owner/">لوحة المالك</a>
-        <a class="nav-link" href="/admin/">لوحة الأدمن</a>
+
       </nav>
 
+
+
       <div class="nav-actions">
+
         <a class="btn btn-secondary" href="/login/">الدخول</a>
+
         <a class="btn btn-primary" href="/register/">إنشاء حساب</a>
+
       </div>
+
     </div>
+
   </header>
 
+
+
   <main class="booking-page">
+
     <div class="container">
+
       <div class="page-head">
+
         <h1>حجز ملعب</h1>
-        <p>أكمل بياناتك واختر الموعد المناسب، ثم أكد الحجز.</p>
+
+        <p>اختر التاريخ المناسب، وستظهر لك الأوقات المشغولة مباشرة قبل تأكيد الحجز.</p>
+
       </div>
+
+
 
       <div id="page-message" class="notice-box"></div>
 
+
+
       <div id="booking-content">
+
         <div class="empty-state">جارِ تحميل بيانات الملعب...</div>
+
       </div>
+
     </div>
+
   </main>
 
+
+
   <footer class="footer">
+
     <div class="container footer-inner">
+
       <div>© 2026 ملاعب. منصة حجز ملاعب رياضية.</div>
+
       <div>احجز ملعبك بسهولة.</div>
+
     </div>
+
   </footer>
 
+
+
   <script>
+
     const pageMessage = document.getElementById('page-message');
+
     const bookingContent = document.getElementById('booking-content');
+
+
 
     let selectedVenue = null;
 
+    let busySlots = [];
+
+
+
     function showMessage(text, type = 'error') {
+
       pageMessage.style.display = 'block';
+
       pageMessage.textContent = text;
+
       pageMessage.className = type === 'success'
+
         ? 'notice-box notice-success'
+
         : 'notice-box notice-error';
+
     }
+
+
 
     function clearMessage() {
+
       pageMessage.style.display = 'none';
+
       pageMessage.textContent = '';
+
       pageMessage.className = 'notice-box';
+
     }
+
+
+
+    function getAccessToken() {
+
+      return localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken') || '';
+
+    }
+
+
 
     async function httpJson(path, options = {}) {
+
+      const token = getAccessToken();
+
+
+
       const response = await fetch(`/api/v1${path}`, {
+
         headers: {
+
           'Content-Type': 'application/json',
+
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+
           ...(options.headers || {})
+
         },
+
         ...options
+
       });
 
-      const data = await response.json().catch(() => null);
+
+
+      const data = await response.json().catch(() => ({}));
+
+
 
       if (!response.ok) {
+
         const message = data?.message || data?.error || 'حدث خطأ أثناء الاتصال بالخادم';
+
         throw new Error(Array.isArray(message) ? message.join(', ') : message);
+
       }
+
+
 
       return data;
+
     }
+
+
 
     function escapeHtml(value) {
+
       return String(value ?? '')
+
         .replace(/&/g, '&amp;')
+
         .replace(/</g, '&lt;')
+
         .replace(/>/g, '&gt;')
+
         .replace(/"/g, '&quot;')
+
         .replace(/'/g, '&#39;');
+
     }
+
+
 
     function getVenueIdFromUrl() {
+
       const params = new URLSearchParams(window.location.search);
+
       return params.get('venueId') || '';
+
     }
+
+
 
     function extractCustomMeta(text) {
+
       const source = String(text || '');
+
       const cityMatch = source.match(/\[CUSTOM_CITY\]:(.*?)(\n|$)/);
+
       const areaMatch = source.match(/\[CUSTOM_AREA\]:(.*?)(\n|$)/);
 
+
+
       return {
+
         customCity: cityMatch ? cityMatch[1].trim() : '',
+
         customArea: areaMatch ? areaMatch[1].trim() : ''
+
       };
+
     }
+
+
 
     function cleanDescription(text) {
+
       return String(text || '')
+
         .replace(/\[CUSTOM_CITY\]:(.*?)(\n|$)/g, '')
+
         .replace(/\[CUSTOM_AREA\]:(.*?)(\n|$)/g, '')
+
         .trim();
+
     }
+
+
 
     function normalizeSportLabel(sportType) {
+
       const value = String(sportType || '').toUpperCase();
 
+
+
       if (value === 'FOOTBALL') return 'كرة قدم';
+
       if (value === 'PADEL') return 'بادل';
+
       if (value === 'TENNIS') return 'تنس';
+
       if (value === 'BASKETBALL') return 'كرة سلة';
+
       if (value === 'VOLLEYBALL') return 'كرة طائرة';
 
+
+
       return sportType || '—';
+
     }
+
+
 
     function getVenueCityName(venue) {
+
       const meta = extractCustomMeta(venue.description || '');
 
-      const cityName =
-        venue.city?.nameAr ||
-        venue.cityNameAr ||
-        venue.cityName ||
-        '—';
+      const cityName = venue.city?.nameAr || venue.cityNameAr || venue.cityName || '—';
+
+
 
       if (cityName === 'أخرى' && meta.customCity) {
+
         return meta.customCity;
+
       }
+
+
 
       return cityName;
+
     }
+
+
 
     function getVenueAreaName(venue) {
+
       const meta = extractCustomMeta(venue.description || '');
 
-      const areaName =
-        venue.area?.nameAr ||
-        venue.areaNameAr ||
-        venue.areaName ||
-        '—';
+      const areaName = venue.area?.nameAr || venue.areaNameAr || venue.areaName || '—';
+
+
 
       if (areaName === 'أخرى' && meta.customArea) {
+
         return meta.customArea;
+
       }
 
+
+
       return areaName;
+
     }
+
+
 
     function getVenuePrice(venue) {
+
       const rawPrice =
+
         venue.defaultHourlyPrice ||
+
         venue.pricePerHour ||
+
         venue.hourlyPrice ||
+
         venue.price ||
+
         0;
 
+
+
       const price = Number(rawPrice);
+
       return Number.isFinite(price) ? price : 0;
+
     }
 
-    function updateSummary() {
-      if (!selectedVenue) return;
+
+
+    function parseTimeToMinutes(value) {
+
+      const [hourRaw, minuteRaw] = String(value || '00:00').split(':');
+
+      const hour = Number(hourRaw || 0);
+
+      const minute = Number(minuteRaw || 0);
+
+
+
+      if (!Number.isFinite(hour) || !Number.isFinite(minute)) {
+
+        return 0;
+
+      }
+
+
+
+      return hour * 60 + minute;
+
+    }
+
+
+
+    function rangesOverlap(startA, endA, startB, endB) {
+
+      return startA < endB && startB < endA;
+
+    }
+
+
+
+    function renderBusySlots() {
+
+      const box = document.getElementById('busy-slots-box');
+
+
+
+      if (!box) return;
+
+
+
+      if (!busySlots.length) {
+
+        box.style.display = 'none';
+
+        box.innerHTML = '';
+
+        return;
+
+      }
+
+
+
+      box.style.display = 'block';
+
+      box.innerHTML = `
+
+        <div class="busy-slots-title">الأوقات المشغولة لهذا اليوم</div>
+
+        <div class="busy-slots-list">
+
+          ${busySlots.map((slot) => `
+
+            <span class="busy-slot-pill">${escapeHtml(slot.startTime)} - ${escapeHtml(slot.endTime)}</span>
+
+          `).join('')}
+
+        </div>
+
+      `;
+
+    }
+
+
+
+    async function loadBusySlotsForSelectedDate() {
+
+      const dateInput = document.getElementById('booking-date');
+
+
+
+      if (!selectedVenue || !selectedVenue.id || !dateInput || !dateInput.value) {
+
+        busySlots = [];
+
+        renderBusySlots();
+
+        return;
+
+      }
+
+
+
+      try {
+
+        const data = await httpJson(
+
+          `/bookings/venue/${encodeURIComponent(selectedVenue.id)}/availability?date=${encodeURIComponent(dateInput.value)}`,
+
+          { method: 'GET' }
+
+        );
+
+
+
+        busySlots = Array.isArray(data?.busySlots) ? data.busySlots : [];
+
+        renderBusySlots();
+
+      } catch (error) {
+
+        busySlots = [];
+
+        renderBusySlots();
+
+      }
+
+    }
+
+
+
+    function isSelectedTimeBusy() {
+
+      const startInput = document.getElementById('start-time');
 
       const durationInput = document.getElementById('duration-hours');
-      const dateInput = document.getElementById('booking-date');
-      const timeInput = document.getElementById('start-time');
 
-      const durationHours = Math.max(1, Number(durationInput.value || 1));
-      const hourlyPrice = getVenuePrice(selectedVenue);
-      const totalPrice = hourlyPrice * durationHours;
 
-      document.getElementById('summary-date').textContent = dateInput.value || '—';
-      document.getElementById('summary-time').textContent = timeInput.value || '—';
-      document.getElementById('summary-hours').textContent = `${durationHours} ساعة`;
-      document.getElementById('summary-price').textContent = `${hourlyPrice} ريال`;
-      document.getElementById('summary-total').textContent = `الإجمالي: ${totalPrice} ريال`;
+
+      if (!startInput || !startInput.value || !durationInput || !durationInput.value) {
+
+        return false;
+
+      }
+
+
+
+      const requestedStart = parseTimeToMinutes(startInput.value);
+
+      const requestedEnd = requestedStart + Number(durationInput.value || 1) * 60;
+
+
+
+      return busySlots.some((slot) => {
+
+        const busyStart = parseTimeToMinutes(slot.startTime);
+
+        const busyEnd = parseTimeToMinutes(slot.endTime);
+
+
+
+        return rangesOverlap(requestedStart, requestedEnd, busyStart, busyEnd);
+
+      });
+
     }
 
+
+
+    function updateSummary() {
+
+      if (!selectedVenue) return;
+
+
+
+      const durationInput = document.getElementById('duration-hours');
+
+      const dateInput = document.getElementById('booking-date');
+
+      const timeInput = document.getElementById('start-time');
+
+
+
+      const durationHours = Math.max(1, Number(durationInput.value || 1));
+
+      const hourlyPrice = getVenuePrice(selectedVenue);
+
+      const totalPrice = hourlyPrice * durationHours;
+
+
+
+      document.getElementById('summary-date').textContent = dateInput.value || '—';
+
+      document.getElementById('summary-time').textContent = timeInput.value || '—';
+
+      document.getElementById('summary-hours').textContent = `${durationHours} ساعة`;
+
+      document.getElementById('summary-price').textContent = `${hourlyPrice} ريال`;
+
+      document.getElementById('summary-total').textContent = `الإجمالي: ${totalPrice} ريال`;
+
+    }
+
+
+
     function renderBookingPage(venue) {
+
       const cityName = getVenueCityName(venue);
+
       const areaName = getVenueAreaName(venue);
+
       const description = cleanDescription(venue.description);
+
       const hourlyPrice = getVenuePrice(venue);
 
+
+
       bookingContent.innerHTML = `
+
         <div class="booking-layout">
+
           <section class="panel">
+
             <h2>بيانات الحجز</h2>
 
+
+
+            <div id="busy-slots-box" class="busy-slots-box"></div>
+
+
+
             <form id="booking-form" class="booking-form">
+
               <div class="form-grid">
+
                 <div class="field">
+
                   <label for="customer-name">الاسم</label>
+
                   <input id="customer-name" type="text" placeholder="اكتب اسمك" required />
+
                 </div>
 
+
+
                 <div class="field">
+
                   <label for="customer-phone">رقم الجوال</label>
+
                   <input id="customer-phone" type="tel" placeholder="05xxxxxxxx" required />
+
                 </div>
+
               </div>
 
+
+
               <div class="form-grid">
+
                 <div class="field">
+
                   <label for="booking-date">تاريخ الحجز</label>
+
                   <input id="booking-date" type="date" required />
+
                 </div>
 
+
+
                 <div class="field">
+
                   <label for="start-time">وقت البداية</label>
+
                   <input id="start-time" type="time" required />
+
                 </div>
+
               </div>
+
+
 
               <div class="form-grid">
-                <div class="field">
-                  <label for="duration-hours">عدد الساعات</label>
-                  <input id="duration-hours" type="number" min="1" step="1" value="1" required />
-                </div>
 
                 <div class="field">
-                  <label>السعر بالساعة</label>
-                  <input type="text" value="${escapeHtml(hourlyPrice)} ريال" disabled />
+
+                  <label for="duration-hours">عدد الساعات</label>
+
+                  <input id="duration-hours" type="number" min="1" step="1" value="1" required />
+
                 </div>
+
+
+
+                <div class="field">
+
+                  <label>السعر بالساعة</label>
+
+                  <input type="text" value="${escapeHtml(hourlyPrice)} ريال" disabled />
+
+                </div>
+
               </div>
+
+
 
               <div class="field">
+
                 <label for="notes">ملاحظات اختيارية</label>
+
                 <textarea id="notes" placeholder="أي ملاحظات تريد إضافتها للحجز..."></textarea>
+
               </div>
+
+
 
               <div class="actions">
+
                 <button id="submit-booking-btn" class="btn btn-primary" type="submit">تأكيد الحجز</button>
+
                 <a class="btn btn-secondary" href="/venues/">رجوع للملاعب</a>
+
               </div>
+
             </form>
+
           </section>
 
+
+
           <aside class="panel">
+
             <h2>تفاصيل الملعب</h2>
 
+
+
             <div class="venue-box">
+
               <h3 class="venue-title">${escapeHtml(venue.nameAr || venue.name || '—')}</h3>
 
+
+
               <div class="venue-meta-grid">
+
                 <div class="venue-meta-item">
+
                   <span class="meta-label">الرياضة</span>
+
                   <span class="meta-value">${escapeHtml(normalizeSportLabel(venue.sportType))}</span>
+
                 </div>
 
+
+
                 <div class="venue-meta-item">
+
                   <span class="meta-label">المدينة</span>
+
                   <span class="meta-value">${escapeHtml(cityName)}</span>
+
                 </div>
 
+
+
                 <div class="venue-meta-item">
+
                   <span class="meta-label">الحي</span>
+
                   <span class="meta-value">${escapeHtml(areaName)}</span>
+
                 </div>
 
+
+
                 <div class="venue-meta-item">
+
                   <span class="meta-label">السعر بالساعة</span>
+
                   <span class="meta-value">${escapeHtml(hourlyPrice)} ريال</span>
+
                 </div>
+
               </div>
+
+
 
               <div class="venue-meta-item">
+
                 <span class="meta-label">الوصف</span>
+
                 <span class="meta-value">${escapeHtml(description || 'لا يوجد وصف مضاف بعد.')}</span>
+
               </div>
+
+
 
               <h2 style="margin-top: 8px;">ملخص الحجز</h2>
 
+
+
               <div class="summary-box">
+
                 <div class="summary-item">
+
                   <span class="meta-label">التاريخ</span>
+
                   <span id="summary-date" class="meta-value">—</span>
+
                 </div>
 
+
+
                 <div class="summary-item">
+
                   <span class="meta-label">الوقت</span>
+
                   <span id="summary-time" class="meta-value">—</span>
+
                 </div>
 
+
+
                 <div class="summary-item">
+
                   <span class="meta-label">المدة</span>
+
                   <span id="summary-hours" class="meta-value">1 ساعة</span>
+
                 </div>
 
+
+
                 <div class="summary-item">
+
                   <span class="meta-label">السعر بالساعة</span>
+
                   <span id="summary-price" class="meta-value">${escapeHtml(hourlyPrice)} ريال</span>
+
                 </div>
+
+
 
                 <div id="summary-total" class="summary-total">الإجمالي: ${escapeHtml(hourlyPrice)} ريال</div>
+
               </div>
+
             </div>
+
           </aside>
+
         </div>
+
       `;
 
+
+
       const today = new Date().toISOString().slice(0, 10);
+
+
+
       document.getElementById('booking-date').min = today;
+
       document.getElementById('booking-date').value = today;
 
-      document.getElementById('booking-date').addEventListener('input', updateSummary);
-      document.getElementById('start-time').addEventListener('input', updateSummary);
-      document.getElementById('duration-hours').addEventListener('input', updateSummary);
+
+
+      document.getElementById('booking-date').addEventListener('input', async () => {
+
+        updateSummary();
+
+        await loadBusySlotsForSelectedDate();
+
+      });
+
+
+
+      document.getElementById('start-time').addEventListener('input', () => {
+
+        updateSummary();
+
+
+
+        if (isSelectedTimeBusy()) {
+
+          showMessage('هذا الوقت متداخل مع وقت مشغول. اختر وقتًا آخر.');
+
+        }
+
+      });
+
+
+
+      document.getElementById('duration-hours').addEventListener('input', () => {
+
+        updateSummary();
+
+
+
+        if (isSelectedTimeBusy()) {
+
+          showMessage('مدة الحجز المختارة تتداخل مع وقت مشغول. اختر وقتًا أو مدة أخرى.');
+
+        }
+
+      });
+
+
+
       document.getElementById('booking-form').addEventListener('submit', submitBooking);
 
+
+
       updateSummary();
+
+      loadBusySlotsForSelectedDate();
+
     }
+
+
 
     async function loadVenue() {
+
       const venueId = getVenueIdFromUrl();
 
+
+
       if (!venueId) {
+
         bookingContent.innerHTML = '<div class="empty-state">لم يتم تحديد ملعب للحجز.</div>';
+
         showMessage('يرجى اختيار ملعب من صفحة الملاعب أولًا.');
+
         return;
+
       }
+
+
 
       try {
+
         clearMessage();
 
+
+
         const venues = await httpJson('/venues', { method: 'GET' });
+
         const list = Array.isArray(venues) ? venues : [];
+
         const venue = list.find((item) => String(item.id) === String(venueId));
 
+
+
         if (!venue) {
+
           bookingContent.innerHTML = '<div class="empty-state">تعذر العثور على بيانات الملعب.</div>';
+
           showMessage('تعذر العثور على الملعب المطلوب.');
+
           return;
+
         }
+
+
 
         if (String(venue.approvalStatus || '').toUpperCase() !== 'APPROVED') {
+
           bookingContent.innerHTML = '<div class="empty-state">هذا الملعب غير متاح للحجز حاليًا.</div>';
+
           showMessage('لا يمكن الحجز في ملعب غير معتمد.');
+
           return;
+
         }
 
+
+
         selectedVenue = venue;
+
         renderBookingPage(venue);
+
       } catch (error) {
+
         bookingContent.innerHTML = '<div class="empty-state">تعذر تحميل بيانات الملعب.</div>';
+
         showMessage(error.message || 'تعذر تحميل بيانات الملعب.');
+
       }
+
     }
 
+
+
     async function submitBooking(event) {
+
       event.preventDefault();
 
-      if (!selectedVenue) {
-        showMessage('بيانات الملعب غير متوفرة.');
+
+
+      await loadBusySlotsForSelectedDate();
+
+
+
+      if (isSelectedTimeBusy()) {
+
+        showMessage('لا يمكن إرسال الحجز لأن الوقت المختار مشغول لهذا الملعب. اختر وقتًا آخر.');
+
         return;
+
       }
+
+
+
+      if (!selectedVenue) {
+
+        showMessage('بيانات الملعب غير متوفرة.');
+
+        return;
+
+      }
+
+
 
       const submitBtn = document.getElementById('submit-booking-btn');
 
+
+
       const payload = {
+
         venueId: selectedVenue.id,
+
         customerName: document.getElementById('customer-name').value.trim(),
+
         customerPhone: document.getElementById('customer-phone').value.trim(),
+
         bookingDate: document.getElementById('booking-date').value,
+
         startTime: document.getElementById('start-time').value,
+
         durationHours: Number(document.getElementById('duration-hours').value || 1),
+
         notes: document.getElementById('notes').value.trim() || undefined
+
       };
 
+
+
       if (!payload.customerName || !payload.customerPhone || !payload.bookingDate || !payload.startTime) {
+
         showMessage('يرجى إكمال بيانات الحجز المطلوبة.');
+
         return;
+
       }
+
+
 
       if (!Number.isFinite(payload.durationHours) || payload.durationHours < 1) {
+
         showMessage('مدة الحجز غير صحيحة.');
+
         return;
+
       }
 
+
+
       try {
+
         clearMessage();
 
+
+
         submitBtn.disabled = true;
+
         submitBtn.textContent = 'جارِ تأكيد الحجز...';
 
+
+
         await httpJson('/bookings', {
+
           method: 'POST',
+
           body: JSON.stringify(payload)
+
         });
 
-        showMessage('تم تأكيد الحجز بنجاح.', 'success');
+
+
+        showMessage('تم إرسال طلب الحجز بنجاح وهو الآن قيد انتظار موافقة المالك.', 'success');
+
+
 
         document.getElementById('booking-form').reset();
 
+
+
         const today = new Date().toISOString().slice(0, 10);
+
         document.getElementById('booking-date').min = today;
+
         document.getElementById('booking-date').value = today;
+
         document.getElementById('duration-hours').value = 1;
 
+
+
         updateSummary();
+
+        await loadBusySlotsForSelectedDate();
+
       } catch (error) {
+
         showMessage(error.message || 'تعذر تأكيد الحجز.');
+
       } finally {
+
         submitBtn.disabled = false;
+
         submitBtn.textContent = 'تأكيد الحجز';
+
       }
+
     }
 
+
+
     loadVenue();
+
   </script>
+
 </body>
+
 </html>
+
