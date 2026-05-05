@@ -419,6 +419,52 @@
       );
     }
 
+    function formatMoney(value) {
+
+      if (value === null || value === undefined || value === '') {
+
+        return '0';
+
+      }
+
+
+
+      const number = Number(value);
+
+
+
+      if (!Number.isFinite(number)) {
+
+        return String(value);
+
+      }
+
+
+
+      return String(number);
+
+    }
+
+
+
+    function normalizePaymentStatus(status) {
+
+      const value = String(status || '').toUpperCase();
+
+
+
+      if (value === 'DEPOSIT_PAID') return 'تم دفع العربون';
+
+      if (value === 'PAID') return 'مدفوع بالكامل';
+
+      if (value === 'REFUNDED') return 'مسترجع';
+
+      return 'غير مدفوع';
+
+    }
+
+
+
     function getFilteredBookings() {
       const search = document.getElementById('search-input').value.trim().toLowerCase();
       const statusFilter = document.getElementById('status-filter').value;
@@ -499,6 +545,27 @@
                     <span class="meta-label">الإجمالي</span>
                     <span class="meta-value">${escapeHtml(booking.totalPrice || '—')} ريال</span>
                   </div>
+
+
+
+                  <div class="booking-meta-item">
+
+                    <span class="meta-label">العربون</span>
+
+                    <span class="meta-value">${escapeHtml(formatMoney(booking.depositAmount))} ريال</span>
+
+                  </div>
+
+
+
+                  <div class="booking-meta-item">
+
+                    <span class="meta-label">حالة الدفع</span>
+
+                    <span class="meta-value">${escapeHtml(normalizePaymentStatus(booking.paymentStatus))}</span>
+
+                  </div>
+
 
                   <div class="booking-meta-item">
                     <span class="meta-label">تاريخ الإنشاء</span>
