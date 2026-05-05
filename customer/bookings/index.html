@@ -453,6 +453,8 @@
 
 
 
+      if (value === 'DEPOSIT_SUBMITTED') return 'بانتظار مراجعة العربون';
+
       if (value === 'DEPOSIT_PAID') return 'تم دفع العربون';
 
       if (value === 'PAID') return 'مدفوع بالكامل';
@@ -492,6 +494,40 @@
       });
     }
 
+    function renderDepositAction(booking) {
+
+      const bookingStatus = String(booking.status || '').toUpperCase();
+
+      const paymentStatus = String(booking.paymentStatus || '').toUpperCase();
+
+
+
+      if (bookingStatus === 'CONFIRMED' && paymentStatus === 'UNPAID') {
+
+        return `
+
+          <div class="booking-actions">
+
+            <button class="btn btn-primary" type="button" data-action="submit-deposit" data-id="${escapeHtml(booking.id)}">
+
+              دفع العربون
+
+            </button>
+
+          </div>
+
+        `;
+
+      }
+
+
+
+      return '';
+
+    }
+
+
+
     function renderBookings(list) {
       const wrap = document.getElementById('bookings-list-wrap');
       const bookings = Array.isArray(list) ? list : [];
@@ -516,7 +552,13 @@
                   </div>
 
                   <div class="status-box">
-                    <span class="${statusInfo.cls}">${escapeHtml(statusInfo.label)}</span>
+                    <div>
+
+                      <span class="${statusInfo.cls}">${escapeHtml(statusInfo.label)}</span>
+
+                      ${renderDepositAction(booking)}
+
+                    </div>
                   </div>
                 </div>
 
@@ -614,21 +656,45 @@
       }
     }
 
-    async function updateBookingStatus(id, status) {
+    async function submitDeposit(bookingId, button) {
+
       try {
+
         clearMessage();
 
-        await httpJson(`/bookings/${id}/status`, {
-          method: 'PATCH',
-          body: JSON.stringify({ status })
+
+
+        button.disabled = true;
+
+        button.textContent = 'جارِ إرسال العربون...';
+
+
+
+        await httpJson(`/bookings/${bookingId}/deposit/submit`, {
+
+          method: 'PATCH'
+
         });
 
-        showMessage(status === 'CONFIRMED' ? 'تم تأكيد الحجز بنجاح.' : 'تم إلغاء الحجز بنجاح.');
+
+
+        showMessage('تم إرسال طلب دفع العربون، وهو الآن بانتظار مراجعة المالك.', 'success');
+
         await loadBookings();
+
       } catch (error) {
-        showMessage(error.message || 'تعذر تحديث حالة الحجز.', 'error');
+
+        showMessage(error.message || 'تعذر إرسال دفع العربون.', 'error');
+
+        button.disabled = false;
+
+        button.textContent = 'دفع العربون';
+
       }
+
     }
+
+
 
     function bindEvents() {
       document.getElementById('search-input').addEventListener('input', () => {
@@ -640,6 +706,22 @@
       });
 
       document.getElementById('refresh-btn').addEventListener('click', loadBookings);
+
+
+
+      document.getElementById('bookings-list-wrap').addEventListener('click', async (event) => {
+
+        const button = event.target.closest('[data-action="submit-deposit"][data-id]');
+
+        if (!button) return;
+
+
+
+        const bookingId = button.getAttribute('data-id');
+
+        await submitDeposit(bookingId, button);
+
+      });
 
       document.getElementById('bookings-list-wrap').addEventListener('click', async (event) => {
         const button = event.target.closest('[data-action][data-id]');
